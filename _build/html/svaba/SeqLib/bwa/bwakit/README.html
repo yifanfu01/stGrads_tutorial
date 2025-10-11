@@ -1,0 +1,206 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/svaba/SeqLib/bwa/bwakit/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
+<p>Bwakit is a self-consistent installation-free package of scripts and precompiled
+binaries, providing an end-to-end solution to read mapping. In addition to the
+basic mapping functionality implemented in bwa, bwakit is able to generate
+proper human reference genome and to take advantage of ALT contigs, if present,
+to improve read mapping and to perform HLA typing for high-coverage human data.
+It can remap name- or coordinate-sorted BAM with read group and barcode
+information retained. Bwakit also <em>optionally</em> trims adapters (via
+<a class="reference external" href="https://github.com/lh3/seqtk/blob/master/trimadap.c">trimadap</a>), marks duplicates (via <a class="reference external" href="https://github.com/GregoryFaust/samblaster">samblaster</a>) and sorts the final
+alignment (via <a class="reference external" href="http://www.htslib.org">samtools</a>).</p>
+<p>Bwakit has two entry scripts: <code class="docutils literal notranslate"><span class="pre">run-gen-ref</span></code> which downloads and generates human
+reference genomes, and <code class="docutils literal notranslate"><span class="pre">run-bwamem</span></code> which prints mapping command lines on the
+standard output that can be piped to <code class="docutils literal notranslate"><span class="pre">sh</span></code> to execute. The two scripts will call
+other programs or use data in <code class="docutils literal notranslate"><span class="pre">bwa.kit</span></code>. The following shows an example about
+how to use bwakit:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download the bwa-0.7.11 binary package (download link may change)</span>
+wget<span class="w"> </span>-O-<span class="w"> </span>http://sourceforge.net/projects/bio-bwa/files/bwakit/bwakit-0.7.12_x64-linux.tar.bz2/download<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span>-dc<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>xf<span class="w"> </span>-
+<span class="c1"># Generate the GRCh38+ALT+decoy+HLA and create the BWA index</span>
+bwa.kit/run-gen-ref<span class="w"> </span>hs38DH<span class="w">   </span><span class="c1"># download GRCh38 and write hs38DH.fa</span>
+bwa.kit/bwa<span class="w"> </span>index<span class="w"> </span>hs38DH.fa<span class="w">  </span><span class="c1"># create BWA index</span>
+<span class="c1"># mapping</span>
+bwa.kit/run-bwamem<span class="w"> </span>-o<span class="w"> </span>out<span class="w"> </span>-H<span class="w"> </span>hs38DH.fa<span class="w"> </span>read1.fq<span class="w"> </span>read2.fq<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</pre></div>
+</div>
+<p>The last mapping command line will generate the following files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">out.aln.bam</span></code>: unsorted alignments with ALT-aware mapping quality. In this
+file, one read may be placed on multiple overlapping ALT contigs at the same
+time even if the read is mapped better to some contigs than others. This makes
+it possible to analyze each contig independent of others.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out.hla.top</span></code>: best genotypes for HLA-A, -B, -C, -DQA1, -DQB1 and -DRB1 genes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out.hla.all</span></code>: other possible genotypes on the six HLA genes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">out.log.*</span></code>: bwa-mem, samblaster and HLA typing log files.</p></li>
+</ul>
+<p>Bwakit can be <a class="reference external" href="https://sourceforge.net/projects/bio-bwa/files/bwakit">downloaded here</a>. It is only available to x86_64-linux. The
+scripts in the package are available in the <a class="reference external" href="https://github.com/lh3/bwa/tree/master/bwakit">bwa/bwakit</a> directory.
+Packaging is done manually for now.</p>
+</section>
+<section id="limitations">
+<h1>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>HLA typing only works for high-coverage human data. The typing accuracy can
+still be improved. We encourage researchers to develop better HLA typing tools
+based on the intermediate output of bwakit (for each HLA gene included in the
+index, bwakit writes all reads matching it in a separate file).</p></li>
+<li><p>Duplicate marking only works when all reads from a single paired-end library
+are provided as the input. This limitation is the necessary tradeoff of fast
+MarkDuplicate provided by samblaster.</p></li>
+<li><p>The adapter trimmer is chosen as it is fast, pipe friendly and does not
+discard reads. However, it is conservative and suboptimal. If this is a
+concern, it is recommended to preprocess input reads with a more sophisticated
+adapter trimmer. We also hope existing trimmers can be modified to operate on
+an interleaved FASTQ stream. We will replace trimadap once a better trimmer
+meets our needs.</p></li>
+<li><p>Bwakit can be memory demanding depends on the functionality invoked. For 30X
+human data, bwa-mem takes about 11GB RAM with 32 threads, samblaster uses
+close to 10GB and BAM shuffling (if the input is sorted BAM) uses several GB.
+In the current setting, sorting uses about 10GB.</p></li>
+</ul>
+</section>
+<section id="package-contents">
+<h1>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bwa.kit
+|-- README.md                  This README file.
+|-- run-bwamem                 *Entry script* for the entire mapping pipeline.
+|-- bwa                        *BWA binary*
+|-- k8                         Interpretor for *.js scripts.
+|-- bwa-postalt.js             Post-process alignments to ALT contigs/decoys/HLA genes.
+|-- htsbox                     Used by run-bwamem for shuffling BAMs and BAM=&gt;FASTQ.
+|-- samblaster                 MarkDuplicates for reads from the same library. v0.1.20
+|-- samtools                   SAMtools for sorting and SAM=&gt;BAM conversion. v1.1
+|-- seqtk                      For FASTQ manipulation.
+|-- trimadap                   Trim Illumina PE sequencing adapters.
+|
+|-- run-gen-ref                *Entry script* for generating human reference genomes.
+|-- resource-GRCh38            Resources for generating GRCh38
+|   |-- hs38DH-extra.fa        Decoy and HLA gene sequences. Used by run-gen-ref.
+|   `-- hs38DH.fa.alt          ALT-to-GRCh38 alignment. Used by run-gen-ref.
+|
+|-- run-HLA                    HLA typing for sequences extracted by bwa-postalt.js.
+|-- typeHLA.sh                 Type one HLA-gene. Called by run-HLA.
+|-- typeHLA.js                 HLA typing from exon-to-contig alignment. Used by typeHLA.sh.
+|-- typeHLA-selctg.js          Select contigs overlapping HLA exons. Used by typeHLA.sh.
+|-- fermi2.pl                  Fermi2 wrapper. Used by typeHLA.sh for de novo assembly.
+|-- fermi2                     Fermi2 binary. Used by fermi2.pl.
+|-- ropebwt2                   RopeBWT2 binary. Used by fermi2.pl.
+|-- resource-human-HLA         Resources for HLA typing
+|   |-- HLA-ALT-exons.bed      Exonic regions of HLA ALT contigs. Used by typeHLA.sh.
+|   |-- HLA-CDS.fa             CDS of HLA-{A,B,C,DQA1,DQB1,DRB1} genes from IMGT/HLA-3.18.0.
+|   |-- HLA-ALT-type.txt       HLA types for each HLA ALT contig. Not used.
+|   `-- HLA-ALT-idx            BWA indices of each HLA ALT contig. Used by typeHLA.sh
+|       `-- (...)
+|
+`-- doc                        BWA documentations
+    |-- bwa.1                  Manpage
+    |-- NEWS.md                Release Notes
+    |-- README.md              GitHub README page
+    `-- README-alt.md          Documentation for ALT mapping
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

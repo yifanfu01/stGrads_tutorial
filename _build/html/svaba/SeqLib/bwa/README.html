@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/svaba/SeqLib/bwa/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><a class="reference external" href="https://travis-ci.org/lh3/bwa"><img alt="Build Status" src="https://travis-ci.org/lh3/bwa.svg?branch=dev" /></a>
+<a class="reference external" href="https://drone.io/github.com/lh3/bwa/latest"><img alt="Build Status" src="https://drone.io/github.com/lh3/bwa/status.png" /></a>
+##Getting started</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/lh3/bwa.git
+cd bwa; make
+./bwa index ref.fa
+./bwa mem ref.fa read-se.fq.gz | gzip -3 &gt; aln-se.sam.gz
+./bwa mem ref.fa read1.fq read2.fq | gzip -3 &gt; aln-pe.sam.gz
+</pre></div>
+</div>
+<p>##Introduction</p>
+<p>BWA is a software package for mapping DNA sequences against a large reference
+genome, such as the human genome. It consists of three algorithms:
+BWA-backtrack, BWA-SW and BWA-MEM. The first algorithm is designed for Illumina
+sequence reads up to 100bp, while the rest two for longer sequences ranged from
+70bp to a few megabases. BWA-MEM and BWA-SW share similar features such as the
+support of long reads and chimeric alignment, but BWA-MEM, which is the latest,
+is generally recommended as it is faster and more accurate. BWA-MEM also has
+better performance than BWA-backtrack for 70-100bp Illumina reads.</p>
+<p>For all the algorithms, BWA first needs to construct the FM-index for the
+reference genome (the <strong>index</strong> command). Alignment algorithms are invoked with
+different sub-commands: <strong>aln/samse/sampe</strong> for BWA-backtrack,
+<strong>bwasw</strong> for BWA-SW and <strong>mem</strong> for the BWA-MEM algorithm.</p>
+<p>##Availability</p>
+<p>BWA is released under <a class="reference external" href="http://en.wikipedia.org/wiki/GNU_General_Public_License">Apache 2.0</a>. The latest source code is <a class="reference external" href="https://github.com/lh3/bwa">freely
+available at github</a>. Released packages can <a class="reference external" href="http://sourceforge.net/projects/bio-bwa/files/">be downloaded</a> at
+SourceForge. After you acquire the source code, simply use <code class="docutils literal notranslate"><span class="pre">make</span></code> to compile
+and copy the single executable <code class="docutils literal notranslate"><span class="pre">bwa</span></code> to the destination you want. The only
+dependency required to build BWA is <a class="reference external" href="http://zlib.net/">zlib</a>.</p>
+<p>Since 0.7.11, precompiled binary for x86_64-linux is available in <a class="reference external" href="http://sourceforge.net/projects/bio-bwa/files/bwakit/">bwakit</a>.
+In addition to BWA, this self-consistent package also comes with bwa-associated
+and 3rd-party tools for proper BAM-to-FASTQ conversion, mapping to ALT contigs,
+adapter triming, duplicate marking, HLA typing and associated data files.</p>
+<p>##Seeking helps</p>
+<p>The detailed usage is described in the man page available together with the
+source code. You can use <code class="docutils literal notranslate"><span class="pre">man</span> <span class="pre">./bwa.1</span></code> to view the man page in a terminal. The
+<a class="reference external" href="http://bio-bwa.sourceforge.net/bwa.shtml">HTML version</a> of the man page can be found at the <a class="reference external" href="http://bio-bwa.sourceforge.net/">BWA website</a>. If you
+have questions about BWA, you may <a class="reference external" href="https://lists.sourceforge.net/lists/listinfo/bio-bwa-help">sign up the mailing list</a> and then send
+the questions to <a class="reference external" href="mailto:bio-bwa-help&#37;&#52;&#48;sourceforge&#46;net">bio-bwa-help<span>&#64;</span>sourceforge<span>&#46;</span>net</a>. You may also ask questions
+in forums such as <a class="reference external" href="http://biostars.org">BioStar</a> and <a class="reference external" href="http://seqanswers.com/">SEQanswers</a>.</p>
+<p>##Citing BWA</p>
+<ul class="simple">
+<li><p>Li H. and Durbin R. (2009) Fast and accurate short read alignment with
+Burrows-Wheeler transform. <em>Bioinformatics</em>, <strong>25</strong>, 1754-1760. [PMID:
+<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/19451168">19451168</a>]. (if you use the BWA-backtrack algorithm)</p></li>
+<li><p>Li H. and Durbin R. (2010) Fast and accurate long-read alignment with
+Burrows-Wheeler transform. <em>Bioinformatics</em>, <strong>26</strong>, 589-595. [PMID:
+<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/20080505">20080505</a>]. (if you use the BWA-SW algorithm)</p></li>
+<li><p>Li H. (2013) Aligning sequence reads, clone sequences and assembly contigs
+with BWA-MEM. <a class="reference external" href="http://arxiv.org/abs/1303.3997">arXiv:1303.3997v2</a> [q-bio.GN]. (if you use the BWA-MEM
+algorithm or the <strong>fastmap</strong> command, or want to cite the whole BWA package)</p></li>
+</ul>
+<p>Please note that the last reference is a preprint hosted at <a class="reference external" href="http://arxiv.org/">arXiv.org</a>. I
+do not have plan to submit it to a peer-reviewed journal in the near future.</p>
+<p>##Frequently asked questions (FAQs)</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#type"><span class="xref myst">What types of data does BWA work with?</span></a></p></li>
+<li><p><a class="reference internal" href="#multihit"><span class="xref myst">Why does a read appear multiple times in the output SAM?</span></a></p></li>
+<li><p><a class="reference internal" href="#4gb"><span class="xref myst">Does BWA work on reference sequences longer than 4GB in total?</span></a></p></li>
+<li><p><a class="reference internal" href="#pe0"><span class="xref myst">Why can one read in a pair has high mapping quality but the other has zero?</span></a></p></li>
+<li><p><a class="reference internal" href="#endref"><span class="xref myst">How can a BWA-backtrack alignment stands out of the end of a chromosome?</span></a></p></li>
+<li><p><a class="reference internal" href="#altctg"><span class="xref myst">Does BWA work with ALT contigs in the GRCh38 release?</span></a></p></li>
+<li><p><a class="reference internal" href="#postalt"><span class="xref myst">Can I just run BWA-MEM against GRCh38+ALT without post-processing?</span></a></p></li>
+</ol>
+<p>####<a name="type"></a>1. What types of data does BWA work with?</p>
+<p>BWA works with a variety types of DNA sequence data, though the optimal
+algorithm and setting may vary. The following list gives the recommended
+settings:</p>
+<ul>
+<li><p>Illumina/454/IonTorrent single-end reads longer than ~70bp or assembly
+contigs up to a few megabases mapped to a closely related reference genome:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  bwa mem ref.fa reads.fq &gt; aln.sam
+</pre></div>
+</div>
+</li>
+<li><p>Illumina single-end reads shorter than ~70bp:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  bwa aln ref.fa reads.fq &gt; reads.sai; bwa samse ref.fa reads.sai reads.fq &gt; aln-se.sam
+</pre></div>
+</div>
+</li>
+<li><p>Illumina/454/IonTorrent paired-end reads longer than ~70bp:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  bwa mem ref.fa read1.fq read2.fq &gt; aln-pe.sam
+</pre></div>
+</div>
+</li>
+<li><p>Illumina paired-end reads shorter than ~70bp:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  bwa aln ref.fa read1.fq &gt; read1.sai; bwa aln ref.fa read2.fq &gt; read2.sai
+  bwa sampe ref.fa read1.sai read2.sai read1.fq read2.fq &gt; aln-pe.sam
+</pre></div>
+</div>
+</li>
+<li><p>PacBio subreads or Oxford Nanopore reads to a reference genome:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  bwa mem -x pacbio ref.fa reads.fq &gt; aln.sam
+  bwa mem -x ont2d ref.fa reads.fq &gt; aln.sam
+</pre></div>
+</div>
+</li>
+</ul>
+<p>BWA-MEM is recommended for query sequences longer than ~70bp for a variety of
+error rates (or sequence divergence). Generally, BWA-MEM is more tolerant with
+errors given longer query sequences as the chance of missing all seeds is small.
+As is shown above, with non-default settings, BWA-MEM works with Oxford Nanopore
+reads with a sequencing error rate over 20%.</p>
+<p>####<a name="multihit"></a>2. Why does a read appear multiple times in the output SAM?</p>
+<p>BWA-SW and BWA-MEM perform local alignments. If there is a translocation, a gene
+fusion or a long deletion, a read bridging the break point may have two hits,
+occupying two lines in the SAM output. With the default setting of BWA-MEM, one
+and only one line is primary and is soft clipped; other lines are tagged with
+0x800 SAM flag (supplementary alignment) and are hard clipped.</p>
+<p>####<a name="4gb"></a>3. Does BWA work on reference sequences longer than 4GB in total?</p>
+<p>Yes. Since 0.6.x, all BWA algorithms work with a genome with total length over
+4GB. However, individual chromosome should not be longer than 2GB.</p>
+<p>####<a name="pe0"></a>4. Why can one read in a pair has high mapping quality but the other has zero?</p>
+<p>This is correct. Mapping quality is assigned for individual read, not for a read
+pair. It is possible that one read can be mapped unambiguously, but its mate
+falls in a tandem repeat and thus its accurate position cannot be determined.</p>
+<p>####<a name="endref"></a>5. How can a BWA-backtrack alignment stands out of the end of a chromosome?</p>
+<p>Internally BWA concatenates all reference sequences into one long sequence. A
+read may be mapped to the junction of two adjacent reference sequences. In this
+case, BWA-backtrack will flag the read as unmapped (0x4), but you will see
+position, CIGAR and all the tags. A similar issue may occur to BWA-SW alignment
+as well. BWA-MEM does not have this problem.</p>
+<p>####<a name="altctg"></a>6. Does BWA work with ALT contigs in the GRCh38 release?</p>
+<p>Yes, since 0.7.11, BWA-MEM officially supports mapping to GRCh38+ALT.
+BWA-backtrack and BWA-SW don’t properly support ALT mapping as of now. Please
+see <a class="reference external" href="https://github.com/lh3/bwa/blob/master/README-alt.md">README-alt.md</a> for details. Briefly, it is recommended to use
+<a class="reference external" href="http://sourceforge.net/projects/bio-bwa/files/bwakit/">bwakit</a>, the binary release of BWA, for generating the reference genome
+and for mapping.</p>
+<p>####<a name="postalt"></a>7. Can I just run BWA-MEM against GRCh38+ALT without post-processing?</p>
+<p>If you are not interested in hits to ALT contigs, it is okay to run BWA-MEM
+without post-processing. The alignments produced this way are very close to
+alignments against GRCh38 without ALT contigs. Nonetheless, applying
+post-processing helps to reduce false mappings caused by reads from the
+diverged part of ALT contigs and also enables HLA typing. It is recommended to
+run the post-processing script.</p>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

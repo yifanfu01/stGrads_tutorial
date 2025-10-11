@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTSlib 64 bit reference positions &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">HTSlib 64 bit reference positions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/delly/src/htslib/README.large_positions.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="htslib-64-bit-reference-positions">
+<h1>HTSlib 64 bit reference positions<a class="headerlink" href="#htslib-64-bit-reference-positions" title="Link to this heading"></a></h1>
+<p>HTSlib version 1.10 onwards internally use 64 bit reference positions.  This
+is to support analysis of species like axolotl, tulip and marbled lungfish
+which have, or are expected to have,  chromosomes longer than two gigabases.</p>
+</section>
+<section id="file-format-support">
+<h1>File format support<a class="headerlink" href="#file-format-support" title="Link to this heading"></a></h1>
+<p>Currently 64 bit positions can only be stored in SAM and VCF format files.
+Binary BAM, CRAM and BCF cannot be used due to limitations in the formats
+themselves.  As SAM and VCF are text formats, they have no limit on the
+size of numeric values. Note that while 64 bit positions are supported by
+default for SAM, for VCF they must be enabled explicitly at compile time
+by editing Makefile and adding -DVCF_ALLOW_INT64=1 to CFLAGS.</p>
+</section>
+<section id="compatibility-issues-to-check">
+<h1>Compatibility issues to check<a class="headerlink" href="#compatibility-issues-to-check" title="Link to this heading"></a></h1>
+<p>Various data structure members, function parameters, and return values have
+been expanded from 32 to 64 bits.  As a result, some changes may be needed to
+code that uses the library, even if it does not support long references.</p>
+<section id="variadic-functions-taking-format-strings">
+<h2>Variadic functions taking format strings<a class="headerlink" href="#variadic-functions-taking-format-strings" title="Link to this heading"></a></h2>
+<p>The type of various structure members (e.g. <code class="docutils literal notranslate"><span class="pre">bam1_core_t::pos</span></code>) and return
+values from some functions (e.g. <code class="docutils literal notranslate"><span class="pre">bam_cigar2rlen()</span></code>) have been changed to
+<code class="docutils literal notranslate"><span class="pre">hts_pos_t</span></code>, which is a 64-bit signed integer.  Using these in 32-bit
+code will generally work (as long as the stored positions are within range),
+however care needs to be taken when these values are passed directly
+to functions like <code class="docutils literal notranslate"><span class="pre">printf()</span></code> which take a variable-length argument list and
+a format string.</p>
+<p>Header file <code class="docutils literal notranslate"><span class="pre">htslib/hts.h</span></code> defines macro <code class="docutils literal notranslate"><span class="pre">PRIhts_pos</span></code> which can be
+used in <code class="docutils literal notranslate"><span class="pre">printf()</span></code> format strings to get the correct format specifier for
+an <code class="docutils literal notranslate"><span class="pre">hts_pos_t</span></code> value.  Code that needs to print positions should be
+changed from:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Position is %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bam</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">.</span><span class="n">pos</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>to:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Position is %&quot;</span><span class="n">PRIhts_pos</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bam</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">.</span><span class="n">pos</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If for some reason compatibility with older versions of HTSlib (which do
+not have <code class="docutils literal notranslate"><span class="pre">hts_pos_t</span></code> or <code class="docutils literal notranslate"><span class="pre">PRIhts_pos</span></code>) is needed, the value can be cast to
+<code class="docutils literal notranslate"><span class="pre">int64_t</span></code> and printed as an explicitly 64-bit value:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;inttypes.h&gt;</span><span class="c1"> // For PRId64 and int64_t</span>
+
+<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Position is %&quot;</span><span class="w"> </span><span class="n">PRId64</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int64_t</span><span class="p">)</span><span class="w"> </span><span class="n">bam</span><span class="o">-&gt;</span><span class="n">core</span><span class="p">.</span><span class="n">pos</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Passing incorrect types to variadic functions like <code class="docutils literal notranslate"><span class="pre">printf()</span></code> can lead
+to incorrect behaviour and security risks, so it important to track down
+and fix all of the places where this may happen.  Modern C compilers like
+gcc (version 3.0 onwards) and clang can check <code class="docutils literal notranslate"><span class="pre">printf()</span></code> and <code class="docutils literal notranslate"><span class="pre">scanf()</span></code>
+parameter types for compatibility against the format string.  To
+enable this, build code with <code class="docutils literal notranslate"><span class="pre">-Wall</span></code> or <code class="docutils literal notranslate"><span class="pre">-Wformat</span></code> and fix all the
+reported warnings.</p>
+<p>Where functions that take <code class="docutils literal notranslate"><span class="pre">printf</span></code>-style format strings are implemented,
+they should use the appropriate gcc attributes to enable format string
+checking.  <code class="docutils literal notranslate"><span class="pre">htslib/hts_defs.h</span></code> includes macros <code class="docutils literal notranslate"><span class="pre">HTS_FORMAT</span></code> and
+<code class="docutils literal notranslate"><span class="pre">HTS_PRINTF_FMT</span></code> which can be used to provide the attribute declaration
+in a portable way.  For example, <code class="docutils literal notranslate"><span class="pre">test/sam.c</span></code> uses them for a function
+that prints error messages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">void</span> <span class="n">HTS_FORMAT</span><span class="p">(</span><span class="n">HTS_PRINTF_FMT</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="n">fail</span><span class="p">(</span><span class="n">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="p">{</span> <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span> <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="implicit-type-conversions">
+<h2>Implicit type conversions<a class="headerlink" href="#implicit-type-conversions" title="Link to this heading"></a></h2>
+<p>Conversion of signed <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">int32_t</span></code> to <code class="docutils literal notranslate"><span class="pre">hts_pos_t</span></code> will always work.</p>
+<p>Conversion of <code class="docutils literal notranslate"><span class="pre">hts_pos_t</span></code> to <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">int32_t</span></code> will work as long as the value
+converted is within the range that can be stored in the destination.</p>
+<p>Code that casts unsigned <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> values to signed with the expectation
+that the result may be negative will no longer work as <code class="docutils literal notranslate"><span class="pre">hts_pos_t</span></code> can store
+values over UINT32_MAX.  Such code should be changed to use signed values.</p>
+<p>Functions hts_parse_region() and hts_parse_reg64() return special value
+<code class="docutils literal notranslate"><span class="pre">HTS_POS_MAX</span></code> for regions which extend to the end of the reference.
+This value is slightly smaller than INT64_MAX, but should be larger than
+any reference that is likely to be used.  When cast to <code class="docutils literal notranslate"><span class="pre">int32_t</span></code> the
+result should be <code class="docutils literal notranslate"><span class="pre">INT32_MAX</span></code>.</p>
+</section>
+</section>
+<section id="upgrading-code-to-work-with-64-bit-positions">
+<h1>Upgrading code to work with 64 bit positions<a class="headerlink" href="#upgrading-code-to-work-with-64-bit-positions" title="Link to this heading"></a></h1>
+<p>Variables used to store reference positions should be changed to
+type <code class="docutils literal notranslate"><span class="pre">hts_pos_t</span></code>.  Use <code class="docutils literal notranslate"><span class="pre">PRIhts_pos</span></code> in format strings when printing them.</p>
+<p>When converting positions stored in strings, use <code class="docutils literal notranslate"><span class="pre">strtoll()</span></code> in place of
+<code class="docutils literal notranslate"><span class="pre">atoi()</span></code> or <code class="docutils literal notranslate"><span class="pre">strtol()</span></code> (which produces a 32 bit value on 64-bit Windows and
+all 32-bit platforms).</p>
+<p>Programs which need to look up a reference sequence length from a <code class="docutils literal notranslate"><span class="pre">sam_hdr_t</span></code>
+structure should use <code class="docutils literal notranslate"><span class="pre">sam_hdr_tid2len()</span></code> instead of the old
+<code class="docutils literal notranslate"><span class="pre">sam_hdr_t::target_len</span></code> array (which is left as 32-bit for reasons of
+compatibility).  <code class="docutils literal notranslate"><span class="pre">sam_hdr_tid2len()</span></code> returns <code class="docutils literal notranslate"><span class="pre">hts_pos_t</span></code>, so works correctly
+for large references.</p>
+<p>Various functions which take pointer arguments have new versions which
+support <code class="docutils literal notranslate"><span class="pre">hts_pos_t</span> <span class="pre">*</span></code> arguments.  Code supporting 64-bit positions should
+use the new versions.  These are:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Original function</p></th>
+<th class="head"><p>64-bit version</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>fai_fetch()</p></td>
+<td><p>fai_fetch64()</p></td>
+</tr>
+<tr class="row-odd"><td><p>fai_fetchqual()</p></td>
+<td><p>fai_fetchqual64()</p></td>
+</tr>
+<tr class="row-even"><td><p>faidx_fetch_seq()</p></td>
+<td><p>faidx_fetch_seq64()</p></td>
+</tr>
+<tr class="row-odd"><td><p>faidx_fetch_qual()</p></td>
+<td><p>faidx_fetch_qual64()</p></td>
+</tr>
+<tr class="row-even"><td><p>hts_parse_reg()</p></td>
+<td><p>hts_parse_reg64() or hts_parse_region()</p></td>
+</tr>
+<tr class="row-odd"><td><p>bam_plp_auto()</p></td>
+<td><p>bam_plp64_auto()</p></td>
+</tr>
+<tr class="row-even"><td><p>bam_plp_next()</p></td>
+<td><p>bam_plp64_next()</p></td>
+</tr>
+<tr class="row-odd"><td><p>bam_mplp_auto()</p></td>
+<td><p>bam_mplp64_auto()</p></td>
+</tr>
+</tbody>
+</table>
+<p>Limited support has been added for 64-bit INFO values in VCF files, for large
+values in structural variant END tags.  New functions <code class="docutils literal notranslate"><span class="pre">bcf_update_info_int64()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">bcf_get_info_int64()</span></code> can be used to set and fetch 64-bit INFO values.
+They both take arrays of <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>.  <code class="docutils literal notranslate"><span class="pre">bcf_int64_missing</span></code> and
+<code class="docutils literal notranslate"><span class="pre">bcf_int64_vector_end</span></code> can be used to set missing and vector end values in
+these arrays.  The INFO data is stored in the minimum size needed, so there
+is no harm in using these functions to store smaller integer values.</p>
+</section>
+<section id="structure-members-that-have-changed-size">
+<h1>Structure members that have changed size<a class="headerlink" href="#structure-members-that-have-changed-size" title="Link to this heading"></a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">hts</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+   <span class="n">hts_pair32_t</span><span class="p">::</span><span class="n">begin</span>
+   <span class="n">hts_pair32_t</span><span class="p">::</span><span class="n">end</span>
+
+   <span class="p">(</span><span class="n">typedef</span> <span class="n">hts_pair_pos_t</span> <span class="ow">is</span> <span class="n">provided</span> <span class="k">as</span> <span class="n">a</span> <span class="n">better</span><span class="o">-</span><span class="n">named</span> <span class="n">replacement</span> <span class="k">for</span> <span class="n">hts_pair32_t</span><span class="p">)</span>
+
+   <span class="n">hts_reglist_t</span><span class="p">::</span><span class="n">min_beg</span>
+   <span class="n">hts_reglist_t</span><span class="p">::</span><span class="n">max_end</span>
+
+   <span class="n">hts_itr_t</span><span class="p">::</span><span class="n">beg</span>
+   <span class="n">hts_itr_t</span><span class="p">::</span><span class="n">end</span>
+   <span class="n">hts_itr_t</span><span class="p">::</span><span class="n">curr_beg</span>
+   <span class="n">hts_itr_t</span><span class="p">::</span><span class="n">curr_end</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">regidx</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+   <span class="n">reg_t</span><span class="p">::</span><span class="n">start</span>
+   <span class="n">reg_t</span><span class="p">::</span><span class="n">end</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">sam</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+   <span class="n">bam1_core_t</span><span class="p">::</span><span class="n">pos</span>
+   <span class="n">bam1_core_t</span><span class="p">::</span><span class="n">mpos</span>
+   <span class="n">bam1_core_t</span><span class="p">::</span><span class="n">isize</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">synced_bcf_reader</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+   <span class="n">bcf_sr_regions_t</span><span class="p">::</span><span class="n">start</span>
+   <span class="n">bcf_sr_regions_t</span><span class="p">::</span><span class="n">end</span>
+   <span class="n">bcf_sr_regions_t</span><span class="p">::</span><span class="n">prev_start</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">vcf</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+   <span class="n">bcf_idinfo_t</span><span class="p">::</span><span class="n">info</span>
+
+   <span class="n">bcf_info_t</span><span class="p">::</span><span class="n">v1</span><span class="p">::</span><span class="n">i</span>
+
+   <span class="n">bcf1_t</span><span class="p">::</span><span class="n">pos</span>
+   <span class="n">bcf1_t</span><span class="p">::</span><span class="n">rlen</span>
+</pre></div>
+</div>
+</section>
+<section id="functions-where-parameters-or-the-return-value-have-changed-size">
+<h1>Functions where parameters or the return value have changed size<a class="headerlink" href="#functions-where-parameters-or-the-return-value-have-changed-size" title="Link to this heading"></a></h1>
+<p>Functions are annotated as follows:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[new]</span></code>  The function has been added since version 1.9</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[parameters]</span></code> Function parameters have changed size</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[return]</span></code> Function return value has changed size</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">faidx</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">fai_fetch64</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">fai_fetchqual64</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">faidx_fetch_seq64</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">faidx_fetch_qual64</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">fai_parse_region</span><span class="p">()</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">hts</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">hts_idx_push</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">hts_parse_reg64</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">hts_itr_query</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">hts_reg2bin</span><span class="p">()</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">kstring</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">kputll</span><span class="p">()</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">regidx</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">regidx_overlap</span><span class="p">()</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">sam</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">sam_hdr_tid2len</span><span class="p">()</span>
+   <span class="p">[</span><span class="k">return</span><span class="p">]</span>     <span class="n">bam_cigar2qlen</span><span class="p">()</span>
+   <span class="p">[</span><span class="k">return</span><span class="p">]</span>     <span class="n">bam_cigar2rlen</span><span class="p">()</span>
+   <span class="p">[</span><span class="k">return</span><span class="p">]</span>     <span class="n">bam_endpos</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">bam_itr_queryi</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">sam_itr_queryi</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">bam_plp64_next</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">bam_plp64_auto</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">bam_mplp64_auto</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">sam_cap_mapq</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">sam_prob_realn</span><span class="p">()</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">synced_bcf_reader</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">bcf_sr_seek</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">bcf_sr_regions_overlap</span><span class="p">()</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">tbx</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">tbx_readrec</span><span class="p">()</span>
+
+<span class="n">File</span> <span class="n">htslib</span><span class="o">/</span><span class="n">vcf</span><span class="o">.</span><span class="n">h</span><span class="p">:</span>
+
+   <span class="p">[</span><span class="n">parameters</span><span class="p">]</span> <span class="n">bcf_readrec</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">bcf_update_info_int64</span><span class="p">()</span>
+   <span class="p">[</span><span class="n">new</span><span class="p">]</span>        <span class="n">bcf_get_info_int64</span><span class="p">()</span>
+   <span class="p">[</span><span class="k">return</span><span class="p">]</span>     <span class="n">bcf_dec_int1</span><span class="p">()</span>
+   <span class="p">[</span><span class="k">return</span><span class="p">]</span>     <span class="n">bcf_dec_typed_int1</span><span class="p">()</span>
+
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

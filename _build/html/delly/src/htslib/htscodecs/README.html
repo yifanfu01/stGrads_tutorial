@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Htscodecs &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Htscodecs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/delly/src/htslib/htscodecs/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="htscodecs">
+<h1>Htscodecs<a class="headerlink" href="#htscodecs" title="Link to this heading"></a></h1>
+<p>See the NEWS file for a list of updates and version details.</p>
+<p><a class="reference external" href="https://cirrus-ci.com/github/jkbonfield/htscodecs"><img alt="Build Status" src="https://api.cirrus-ci.com/github/jkbonfield/htscodecs.svg?branch=master" /></a></p>
+<p>This repository implements the custom CRAM codecs used for “EXTERNAL”
+block types.  These consist of two variants of the rANS codec (8-bit
+and 16-bit renormalisation, with run-length encoding and bit-packing
+also supported in the latter), a dynamic arithmetic coder, and custom
+codecs for name/ID compression and quality score compression derived
+from fqzcomp.</p>
+<p>They come with small command line test tools to act as both
+compression exploration programs and as part of the test harness.</p>
+<section id="building">
+<h2>Building<a class="headerlink" href="#building" title="Link to this heading"></a></h2>
+<p>If building from git, you’ll need to recreate the configure script
+using autoconf.  “autoreconf -i” should work if you have the
+appropriate tools.</p>
+<p>From then on, it follows the normal “./configure; make” or
+“mkdir build; cd build; ../configure; make” rule.</p>
+<p>The library can be used as a git sub-module or as a completely
+separate entity.  If you are attempting to make use of these codecs
+within your own library, such as we do within Staden io_lib, it may be
+useful to configure this with `–disable-shared –with-pic’.</p>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<p>There is a “make check” rule.  If you’re using a modern clang you can
+also cd to the tests directory and do “make fuzz” to build some fuzz
+testing targets, but you’ll likely need to modify Makefile.am first as
+this has some hard-coded local paths.</p>
+<p>We also provide test data and some command line tools to demonstrate
+usage of the compression codecs.  These are in the tests directory
+also. Example usage:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>./fqzcomp_qual -s 1 &lt; dat/q40+dir &gt; /tmp/q40.comp
+./fqzcomp_qual  -d &lt; /tmp/q40.comp &gt; /tmp/q40.uncomp
+awk &#39;{print $1}&#39; dat/q40+dir | md5sum;    # f91473032dd6942e72abec0868f17161
+awk &#39;{print $1}&#39; /tmp/q40.uncomp | md5sum;# f91473032dd6942e72abec0868f17161
+</pre></div>
+</div>
+<p>The fqzcomp test format is one quality values per line, with an
+optional additional parameter (0 or 1) to indicate READ1 or READ2 flag
+status.</p>
+<p>There is a larger set of test data in the htscodecs-corpus repository
+(https://github.com/jkbonfield/htscodecs-corpus).  If this is cloned
+into the tests subdirectory of htscodecs then the htscodecs “make
+check” will also use that larger data set for testing purposes.</p>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Link to this heading"></a></h2>
+<p>Many functions just take an input buffer and size and return an output
+buffer, setting *out_size with the decoded size.  NULL is returned for
+error.  This buffer is malloced and is expected to be freed by the
+caller.  These are the *<code class="docutils literal notranslate"><span class="pre">compress</span></code> and *<code class="docutils literal notranslate"><span class="pre">uncompress</span></code> functions.</p>
+<p>A second variant sometimes exists where the output buffer is
+optionally allocated by the caller (it may be NULL in which case it
+has the same operation as above).  If specified, <code class="docutils literal notranslate"><span class="pre">*out_size</span></code> must also
+be set to the allocated size of <code class="docutils literal notranslate"><span class="pre">out</span></code>.  These are the <code class="docutils literal notranslate"><span class="pre">compress_to</span></code>
+and <code class="docutils literal notranslate"><span class="pre">uncompress_to</span></code> functions.</p>
+<p>The compress size sometimes needs additional options.  For the rANS
+and arithmetic coder this is the “order”.  Values of 0 and 1 are
+simple order-0 and order-1 entropy encoder, but this is a bit field
+and the more advanced codecs have additional options to pass in order
+(so it should really be renamed to flags).  See below.  Fqzcomp
+requires more input data - also see below.  In all cases, sufficient
+information is stored in the compressed byte stream such that the
+decompression will work without needing these input paramaters.</p>
+<p>Finally the various <code class="docutils literal notranslate"><span class="pre">compress_bound</span></code> functions give the size of buffer
+needed to be allocated when compressing a block of data.</p>
+<section id="static-rans-4x8-introduced-in-cram-v3-0">
+<h3>Static rANS 4x8 (introduced in CRAM v3.0)<a class="headerlink" href="#static-rans-4x8-introduced-in-cram-v3-0" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;htscodecs/rANS_static.h&quot;</span>
+
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">rans_compress</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                             <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">,</span> <span class="nb">int</span> <span class="n">order</span><span class="p">);</span>
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">rans_uncompress</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                               <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>No (un)compress_to functions exist for this older codec.</p>
+</section>
+<section id="static-rans-4x16-with-bit-pack-rle-cram-v3-1">
+<h3>Static rANS 4x16 with bit-pack/RLE (CRAM v3.1):<a class="headerlink" href="#static-rans-4x16-with-bit-pack-rle-cram-v3-1" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;htscodecs/rANS_static4x16.h&quot;</span>
+
+<span class="n">unsigned</span> <span class="nb">int</span> <span class="n">rans_compress_bound_4x16</span><span class="p">(</span><span class="n">unsigned</span> <span class="nb">int</span> <span class="n">size</span><span class="p">,</span> <span class="nb">int</span> <span class="n">order</span><span class="p">);</span>
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">rans_compress_to_4x16</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span>  <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                                     <span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">,</span>
+                                     <span class="nb">int</span> <span class="n">order</span><span class="p">);</span>
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">rans_compress_4x16</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                                  <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">,</span> <span class="nb">int</span> <span class="n">order</span><span class="p">);</span>
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">rans_uncompress_to_4x16</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span>  <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                                       <span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">);</span>
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">rans_uncompress_4x16</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                                    <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="adaptive-arithmetic-coding-cram-v3-1">
+<h3>Adaptive arithmetic coding (CRAM v3.1):<a class="headerlink" href="#adaptive-arithmetic-coding-cram-v3-1" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;htscodecs/arith_dynamic.h&quot;</span>
+
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">arith_compress</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                              <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">,</span> <span class="nb">int</span> <span class="n">order</span><span class="p">);</span>
+
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">arith_uncompress</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                                <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">);</span>
+
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">arith_compress_to</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span>  <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                                 <span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_size</span><span class="p">,</span>
+                                 <span class="nb">int</span> <span class="n">order</span><span class="p">);</span>
+
+<span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">arith_uncompress_to</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">in_size</span><span class="p">,</span>
+                                   <span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="o">*</span><span class="n">out_sz</span><span class="p">);</span>
+
+<span class="n">unsigned</span> <span class="nb">int</span> <span class="n">arith_compress_bound</span><span class="p">(</span><span class="n">unsigned</span> <span class="nb">int</span> <span class="n">size</span><span class="p">,</span> <span class="nb">int</span> <span class="n">order</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="name-tokeniser-cram-v3-1">
+<h3>Name tokeniser (CRAM v3.1):<a class="headerlink" href="#name-tokeniser-cram-v3-1" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;htscodecs/tokenise_name3.h&quot;</span>
+
+<span class="n">uint8_t</span> <span class="o">*</span><span class="n">encode_names</span><span class="p">(</span><span class="n">char</span> <span class="o">*</span><span class="n">blk</span><span class="p">,</span> <span class="nb">int</span> <span class="nb">len</span><span class="p">,</span> <span class="nb">int</span> <span class="n">level</span><span class="p">,</span> <span class="nb">int</span> <span class="n">use_arith</span><span class="p">,</span>
+                      <span class="nb">int</span> <span class="o">*</span><span class="n">out_len</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="n">last_start_p</span><span class="p">);</span>
+
+<span class="n">uint8_t</span> <span class="o">*</span><span class="n">decode_names</span><span class="p">(</span><span class="n">uint8_t</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">uint32_t</span> <span class="n">sz</span><span class="p">,</span> <span class="n">uint32_t</span> <span class="o">*</span><span class="n">out_len</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This differs to the general purpose entropy encoders as it takes a
+specific type of data.  The names should be newline or nul separated
+for <code class="docutils literal notranslate"><span class="pre">encode_names</span></code>.  <code class="docutils literal notranslate"><span class="pre">decode_names</span></code> will alway return nul terminated
+names, so you may need to swap these to newlines if you do round-trip
+tests.</p>
+<p>The compression level controls how hard it tries to find the optimum
+compression method per internal token column.  By default it’ll use
+the rANS 4x16 codec, but with non-zero <code class="docutils literal notranslate"><span class="pre">use_arith</span></code> it’ll use the
+adaptive arithmetic coder instead.</p>
+<p>If non-NULL, last_start_p can be used to point to a partial name if an
+arbitrary block of names were supplied that don’t end of a whole read
+name. (Is this useful?  Probably not.)</p>
+</section>
+<section id="fqzcomp-qual-cram-v3-1">
+<h3>FQZComp Qual (CRAM v3.1):<a class="headerlink" href="#fqzcomp-qual-cram-v3-1" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;htscodecs/fqzcomp_qual.h&quot;</span>
+
+<span class="c1">#define FQZ_FREVERSE 16</span>
+<span class="c1">#define FQZ_FREAD2 128</span>
+
+<span class="n">typedef</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="nb">int</span> <span class="n">num_records</span><span class="p">;</span>
+    <span class="n">uint32_t</span> <span class="o">*</span><span class="nb">len</span><span class="p">;</span>    <span class="o">//</span> <span class="n">of</span> <span class="n">size</span> <span class="n">num_records</span>
+    <span class="n">uint32_t</span> <span class="o">*</span><span class="n">flags</span><span class="p">;</span>  <span class="o">//</span> <span class="n">of</span> <span class="n">size</span> <span class="n">num_records</span>
+<span class="p">}</span> <span class="n">fqz_slice</span><span class="p">;</span>
+
+<span class="n">char</span> <span class="o">*</span><span class="n">fqz_compress</span><span class="p">(</span><span class="nb">int</span> <span class="n">vers</span><span class="p">,</span> <span class="n">fqz_slice</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">uncomp_size</span><span class="p">,</span>
+                   <span class="n">size_t</span> <span class="o">*</span><span class="n">comp_size</span><span class="p">,</span> <span class="nb">int</span> <span class="n">strat</span><span class="p">,</span> <span class="n">fqz_gparams</span> <span class="o">*</span><span class="n">gp</span><span class="p">);</span>
+<span class="n">char</span> <span class="o">*</span><span class="n">fqz_decompress</span><span class="p">(</span><span class="n">char</span> <span class="o">*</span><span class="ow">in</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">comp_size</span><span class="p">,</span> <span class="n">size_t</span> <span class="o">*</span><span class="n">uncomp_size</span><span class="p">,</span>
+                     <span class="nb">int</span> <span class="o">*</span><span class="n">lengths</span><span class="p">,</span> <span class="nb">int</span> <span class="n">nlengths</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This is derived from the quality compression in fqzcomp.  The input
+buffer is a concatenated block of quality strings, without any
+separator.  In order to achieve maximum compression it needs to know
+where these separators are, so they must be passed in via the
+<code class="docutils literal notranslate"><span class="pre">fqz_slice</span></code> struct.</p>
+<p>The summation of length fields should match the input uncomp_size
+field.  Note the len fields may not actually be the length of the
+original sequences as some CRAM features may additional quality values
+(eg the “B” feature).</p>
+<p>It can also be beneficial to supply per-record flags so fqzcomp can
+determine whether orientation (complement strand) helps and whether
+the READ1 vs READ2 quality distributions differ.  These are just
+sub-fields from BAM FLAG.</p>
+<p>The fqz_gparams will normally be passed in as NULL and the encoder
+will automatically select parameters.  If you wish to fine tune the
+compression methods, see the fqz_params and fqz_gparams structures in
+the header file.  You may also find the fqz_qual_stats() utility
+function helpful for gathering statistics on your quality values.</p>
+<p>For decompression, the lengths array is optional and may be specified
+as NULL.  If passed in, it must be of size nlengths and it will be
+filled out with the decoded length of each quality string.  Note
+regardless of whether lengths is NULL or not, the buffer returned will
+be concatenated values so there is no way to tell where one record
+finishes and the next starts.  (CRAM itself knows this via other means.)</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

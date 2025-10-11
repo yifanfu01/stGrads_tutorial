@@ -1,0 +1,172 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/svaba/SeqLib/issue_tracking.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <ul>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">RefGenome.cpp</span></code>, the ctor is better to use initializer list rather than
+assignment in the function body, following best practices. In fact, considering the issues raise with these raw pointers, it may be better to use <code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;faidx_t&gt;</span></code> and call <code class="docutils literal notranslate"><span class="pre">get()</span></code> whenever the pointer is requested.
+The proposed temporary fix is (comments are removed because the codes are obvious and
+excessive comments may become maintenance nightmare):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>RefGenome::RefGenome(const std::string&amp; file ): index(nullptr) {
+
+  if (!read_access_test(file)) {
+    index = nullptr;
+    throw std::invalid_argument(&quot;RefGenome: file not found - &quot; + file);
+  }
+
+  index = fai_load(file.c_str());
+}
+</pre></div>
+</div>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">RefGenome::queryRegion</span></code>, the automatic variable <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">len</span></code> was left uninitialized, while requested by <code class="docutils literal notranslate"><span class="pre">faidx_fetch_seq</span></code> defined in <code class="docutils literal notranslate"><span class="pre">htslib</span></code>.
+Proposal:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int len{0};
+</pre></div>
+</div>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">RefGenome:queryRegion</span></code>, the check for returned <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">*</span></code> is throwing, and the data member <code class="docutils literal notranslate"><span class="pre">index</span></code> is non-null (because the check precedes this one passes).
+This leads to resource leak.
+Proposal:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if (!f){
+  index = nullptr; // added line for exception safety
+  throw std::invalid_argument(&quot;RefGenome::queryRegion - Could not find valid sequence&quot;);
+}
+</pre></div>
+</div>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">SnowUtils.h</span></code>, <code class="docutils literal notranslate"><span class="pre">SnowTools::AddCommas</span></code> has an issue that if template parameter is floating point, format is off. The proposal is to change the name of the function to <code class="docutils literal notranslate"><span class="pre">SnowTools::AddCommasToInt</span></code>, to avoid applying the function to floating point types.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.h</span></code>, the <code class="docutils literal notranslate"><span class="pre">friend</span></code> declaration at the beginning is unnecessary because right now there isn’t any private data.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.h</span></code>, why ctor <code class="docutils literal notranslate"><span class="pre">GenomicRegion(int32_t,</span> <span class="pre">int32_t,</span> <span class="pre">int32_t,</span> <span class="pre">char)</span></code> doesn’t check for positivity of chromosome range, and start, end?
+In addition, why aren’t the members <code class="docutils literal notranslate"><span class="pre">chr</span></code>, <code class="docutils literal notranslate"><span class="pre">pos1</span></code>, <code class="docutils literal notranslate"><span class="pre">pos2</span></code> unsigned and private?</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.h</span></code>, ctor
+<code class="docutils literal notranslate"><span class="pre">GenomicRegion(const</span> <span class="pre">std::string&amp;,</span> <span class="pre">const</span> <span class="pre">std::string&amp;,</span> <span class="pre">const</span> <span class="pre">std::string&amp;,</span> <span class="pre">bam_hdr_t*)</span></code>, why subtract 1 from the string converted chromosome number?
+Is it better to have an <code class="docutils literal notranslate"><span class="pre">else</span></code> block than early return statement?</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.h</span></code>, for function <code class="docutils literal notranslate"><span class="pre">GenomicRegion::random</span></code>, the bound value of 25 in the <code class="docutils literal notranslate"><span class="pre">for</span></code> loop is better to be replaced with a macro, as the tool itself is not necessarily bound to human studies.
+In addition, why an assertion that <code class="docutils literal notranslate"><span class="pre">k&gt;0</span></code>? This immediately fails when <code class="docutils literal notranslate"><span class="pre">k</span></code> starts from 0, as the <code class="docutils literal notranslate"><span class="pre">for</span></code> loop does.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.h</span></code>, why is function <code class="docutils literal notranslate"><span class="pre">GenomicRegion::chrToString</span></code> marked <code class="docutils literal notranslate"><span class="pre">static</span></code>? Is it possible to have an utility function extracted and put it <code class="docutils literal notranslate"><span class="pre">SnowUtils.h</span></code>? Again, the implementation assumes human.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.h</span></code>, why does function <code class="docutils literal notranslate"><span class="pre">GenomicRegion::isEmpty</span></code> insist on <code class="docutils literal notranslate"><span class="pre">chr=-1</span></code>. Is it possible that <code class="docutils literal notranslate"><span class="pre">chr</span> <span class="pre">!=</span> <span class="pre">1</span></code>, but <code class="docutils literal notranslate"><span class="pre">pos1</span> <span class="pre">==</span> <span class="pre">pos2</span></code>, so that it is actually empty?
+Is empty <code class="docutils literal notranslate"><span class="pre">GenomicRegion</span></code> always invalid (because validity check as implemented in <code class="docutils literal notranslate"><span class="pre">GenomicRegion::valid()</span></code>, which by the way should be renamed as <code class="docutils literal notranslate"><span class="pre">is_valid</span></code>, checks for positivity of chromosome)?</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.h</span></code>, function <code class="docutils literal notranslate"><span class="pre">GenomicRegion::cetromereOverlap</span></code> is declared but not defined.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.h</span></code> and <code class="docutils literal notranslate"><span class="pre">GenomicRegion.cpp</span></code>, function <code class="docutils literal notranslate"><span class="pre">GenomicRegion::getOverlap</span></code> has a typo: it should be taking references instead of a copy.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">GenomicRegion.cpp</span></code>, the check in function <code class="docutils literal notranslate"><span class="pre">GenomicRegion::pad</span></code> is possibly wrong. If the argument provided is indeed negative, then multiplying by 2 is unnecessary and comparing with width is also unnecessary. Second, it is actually better to change the function parameter from <code class="docutils literal notranslate"><span class="pre">int32_t</span></code> to <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> because negative padding is counter-intuitive. Third, the check didn’t check for the case that padding to the left/right goes out of range (actually commented out).</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Fractions.cpp</span></code>, the <code class="docutils literal notranslate"><span class="pre">getline</span></code> function in the <code class="docutils literal notranslate"><span class="pre">while</span></code> loop shouldn’t use “\n” as the delimiter, as it will be different on other OS (Windows for sure).
+There also is no member function declared as <code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">valid()</span> <span class="pre">const</span></code> for <code class="docutils literal notranslate"><span class="pre">FracRegion</span></code>, but is used here.
+Last, it is better to have a <code class="docutils literal notranslate"><span class="pre">stringSplit</span></code> function defined in <code class="docutils literal notranslate"><span class="pre">SnowUtils.h</span></code> for breaking lines of delimited files (eg. CSV, tab) into fields.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">gChain.h</span></code>, why isn’t default ctor deleted? It left data members uninitialized.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">gChain.cpp</span></code>, the function definitions are not wrapped in <code class="docutils literal notranslate"><span class="pre">namespace</span> <span class="pre">SnowTools</span></code>.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">BamStats.h</span></code>, not ctors defined although there are data members.
+Proposal:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BamStats() : m_group_map(){}
+</pre></div>
+</div>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">BamStats.cpp</span></code>, function <code class="docutils literal notranslate"><span class="pre">BamReadGroup::addRead</span></code> should take a <code class="docutils literal notranslate"><span class="pre">const</span></code> reference instead of reference to signal the read is not being modified.
+Similarly for <code class="docutils literal notranslate"><span class="pre">BamStats::addRead</span></code>.</p></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">run_snowman2.cpp</span></code> in the <code class="docutils literal notranslate"><span class="pre">SnowmanSV</span></code> repo, line 25 <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">MATE_LOOKUP_MIN</span> <span class="pre">3</span></code> and line 146 <code class="docutils literal notranslate"><span class="pre">static</span> <span class="pre">int32_t</span> <span class="pre">mate_lookup_min</span> <span class="pre">=</span> <span class="pre">3;</span></code> potentially conflicts.</p></li>
+</ul>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

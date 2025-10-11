@@ -1,0 +1,183 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/svaba/SeqLib/fermi-lite/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/lh3/fermi-lite
+<span class="nb">cd</span><span class="w"> </span>fermi-lite<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make
+./fml-asm<span class="w"> </span>test/MT-simu.fq.gz<span class="w"> </span>&gt;<span class="w"> </span>MT.fq
+<span class="c1"># to compile your program:</span>
+gcc<span class="w"> </span>-Wall<span class="w"> </span>-O2<span class="w"> </span>prog.c<span class="w"> </span>-o<span class="w"> </span>prog<span class="w"> </span>-L/path/to/fermi-lite<span class="w"> </span>-lfml<span class="w"> </span>-lz<span class="w"> </span>-lm<span class="w"> </span>-lpthread
+</pre></div>
+</div>
+</section>
+<section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
+<p>Fermi-lite is a standalone C library as well as a command-line tool for
+assembling Illumina short reads in regions from 100bp to 10 million bp in size.
+It is largely a light-weight in-memory version of <a class="reference external" href="http://github.com/lh3/fermikit">fermikit</a> without
+generating any intermediate files. It inherits the performance, the relatively
+small memory footprint and the features of fermikit. In particular, fermi-lite
+is able to retain heterozygous events and thus can be used to assemble diploid
+regions for the purpose of variant calling. It is one of the limited choices
+for local re-assembly and arguably the easiest to interface.</p>
+</section>
+<section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<p>For now, see <a class="reference external" href="https://github.com/lh3/fermi-lite/blob/master/example.c">example.c</a> for the basic use of the library. Here is a
+sketch of the example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="c1">                      // for printf()</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;fml.h&quot;</span><span class="c1">                        // only one header file required</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">	</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n_seqs</span><span class="p">,</span><span class="w"> </span><span class="n">n_utgs</span><span class="p">;</span>
+<span class="w">	</span><span class="n">bseq1_t</span><span class="w"> </span><span class="o">*</span><span class="n">seqs</span><span class="p">;</span><span class="w">                      </span><span class="c1">// array of input sequences</span>
+<span class="w">	</span><span class="n">fml_utg_t</span><span class="w"> </span><span class="o">*</span><span class="n">utgs</span><span class="p">;</span><span class="w">                    </span><span class="c1">// array of output unitigs</span>
+<span class="w">	</span><span class="n">fml_opt_t</span><span class="w"> </span><span class="n">opt</span><span class="p">;</span>
+<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">            </span><span class="c1">// do nothing if there is no input file</span>
+<span class="w">	</span><span class="n">seqs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bseq_read</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">n_seqs</span><span class="p">);</span><span class="w"> </span><span class="c1">// or fill the array with callers&#39; functions</span>
+<span class="w">	</span><span class="n">fml_opt_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">opt</span><span class="p">);</span><span class="w">                 </span><span class="c1">// initialize parameters</span>
+<span class="w">	</span><span class="n">utgs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fml_assemble</span><span class="p">(</span><span class="o">&amp;</span><span class="n">opt</span><span class="p">,</span><span class="w"> </span><span class="n">n_seqs</span><span class="p">,</span><span class="w"> </span><span class="n">seqs</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">n_utgs</span><span class="p">);</span><span class="w"> </span><span class="c1">// assemble!</span>
+<span class="w">	</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n_utgs</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w">        </span><span class="c1">// output in fasta</span>
+<span class="w">		</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;&gt;%d</span><span class="se">\n</span><span class="s">%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">utgs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">seq</span><span class="p">);</span>
+<span class="w">	</span><span class="n">fml_utg_destroy</span><span class="p">(</span><span class="n">n_utgs</span><span class="p">,</span><span class="w"> </span><span class="n">utgs</span><span class="p">);</span><span class="w">      </span><span class="c1">// deallocate unitigs</span>
+<span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">fml_assemble()</span></code> output is in fact a graph. You may have a look at the
+<code class="docutils literal notranslate"><span class="pre">fml_utg_print_gfa()</span></code> function in <a class="reference external" href="https://github.com/lh3/fermi-lite/blob/master/misc.c">misc.c</a> about how to derive a
+<a class="reference external" href="https://github.com/pmelsted/GFA-spec">GFA</a> representation from an array of <code class="docutils literal notranslate"><span class="pre">fml_utg_t</span></code> objects.</p>
+</section>
+<section id="overview-of-the-assembly-algorithm">
+<h1>Overview of the Assembly Algorithm<a class="headerlink" href="#overview-of-the-assembly-algorithm" title="Link to this heading"></a></h1>
+<p>Fermi-lite is an overlap-based assembler. Given a set of input reads, it counts
+<em>k</em>-mers, estimates the <em>k</em>-mer coverage, sets a threshold on <em>k</em>-mer
+occurrences to determine solid <em>k</em>-mers and then use them correct sequencing
+errors (<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/25953801">Li, 2015</a>). After error correction, fermi-lite trims a read
+at an <em>l</em>-mer unique to the read. It then constructs an FM-index for trimmed
+reads (<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/25107872">Li, 2014</a>) and builds a transitively reduced overlap graph from the
+FM-index (<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/20529929">Simpson and Durbin, 2010</a>; <a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/22569178">Li, 2012</a>),
+requiring at least <em>l</em>-bp overlaps. In this graph, fermi-lite trims tips and
+pops bubbles caused by uncorrected errors. If a sequence in the graph has
+multiple overlaps, fermi-lite discards overlaps significantly shorter than the
+longest overlap – this is a technique applied to overlap graph only. The graph
+after these procedure is the final output. Sequences in this graph are unitigs.</p>
+</section>
+<section id="limitations">
+<h1>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h1>
+<ol class="arabic simple">
+<li><p>Fermi-lite can efficiently assemble bacterial genomes. However, it has not
+been carefully tuned for this type of assembly. While on a few GAGE-B data
+sets fermi-lite appears to work well, it may not compete with recent
+mainstream assemblers in general.</p></li>
+<li><p>Fermi-lite does not work with genomes more than tens of megabases as a
+whole. It would take too much memory to stage all data in memory. For large
+genomes, please use <a class="reference external" href="http://github.com/lh3/fermikit">fermikit</a> instead.</p></li>
+<li><p>This is the first iteration of fermi-lite. It is still immarture. In
+particular, I hope fermi-lite can be smart enough to automatically figure
+out various parameters based on input, which is very challenging given the
+high variability of input data.</p></li>
+</ol>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

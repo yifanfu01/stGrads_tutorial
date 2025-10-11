@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installing Delly &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installing Delly</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/delly/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p align="center">
+  <a href="https://academic.oup.com/bioinformatics/article/28/18/i333/245403/DELLY-structural-variant-discovery-by-integrated">
+    <img height="150" src="https://raw.githubusercontent.com/dellytools/assets/main/delly-logo/delly-logo-539x600.png">
+  </a>
+  <h1 align="center">Delly</h1>
+</p>
+<p><a class="reference external" href="http://bioconda.github.io/recipes/delly/README.html"><img alt="install with bioconda" src="https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square" /></a>
+<a class="reference external" href="https://anaconda.org/bioconda/delly"><img alt="Anaconda-Server Badge" src="https://anaconda.org/bioconda/delly/badges/downloads.svg" /></a>
+<a class="reference external" href="https://github.com/dellytools/delly/actions"><img alt="C/C++ CI" src="https://github.com/dellytools/delly/workflows/C/C++%20CI/badge.svg" /></a>
+<a class="reference external" href="https://hub.docker.com/r/dellytools/delly/"><img alt="Docker CI" src="https://github.com/dellytools/delly/workflows/Docker%20CI/badge.svg" /></a>
+<a class="reference external" href="https://github.com/dellytools/delly/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" /></a>
+<a class="reference external" href="https://github.com/dellytools/delly/releases"><img alt="GitHub Releases" src="https://img.shields.io/github/release/dellytools/delly.svg" /></a></p>
+<p>Delly is an integrated structural variant (SV) prediction method that can discover, genotype and visualize deletions, tandem duplications, inversions and translocations at single-nucleotide resolution in short-read and long-read massively parallel sequencing data. It uses paired-ends, split-reads and read-depth to sensitively and accurately delineate genomic rearrangements throughout the genome.</p>
+<section id="installing-delly">
+<h1>Installing Delly<a class="headerlink" href="#installing-delly" title="Link to this heading"></a></h1>
+<p>Delly is available as a <a class="reference external" href="https://github.com/dellytools/delly/releases/">statically linked binary</a>, a <a class="reference external" href="https://github.com/dellytools/delly/releases/">singularity container (SIF file)</a>, a <a class="reference external" href="https://hub.docker.com/r/dellytools/delly/">docker container</a> or via <a class="reference external" href="https://anaconda.org/bioconda/delly">Bioconda</a>. You can also build Delly from source using a recursive clone and make.</p>
+<p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">--recursive</span> <span class="pre">https://github.com/dellytools/delly.git</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">delly/</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">all</span></code></p>
+<p>There is a Delly discussion group <a class="reference external" href="http://groups.google.com/d/forum/delly-users">delly-users</a> for usage and installation questions.</p>
+</section>
+<section id="delly-multi-threading-mode">
+<h1>Delly multi-threading mode<a class="headerlink" href="#delly-multi-threading-mode" title="Link to this heading"></a></h1>
+<p>Delly supports parallel computing using the OpenMP API (www.openmp.org).</p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">PARALLEL=1</span> <span class="pre">-B</span> <span class="pre">src/delly</span></code></p>
+<p>You can set the number of threads using the environment variable OMP_NUM_THREADS.</p>
+<p><code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">OMP_NUM_THREADS=2</span></code></p>
+<p>Delly primarily parallelizes on the sample level. Hence, OMP_NUM_THREADS should be always smaller or equal to the number of input samples.</p>
+</section>
+<section id="running-delly">
+<h1>Running Delly<a class="headerlink" href="#running-delly" title="Link to this heading"></a></h1>
+<p>Delly needs a sorted, indexed and duplicate marked bam file for every input sample.
+An indexed reference genome is required to identify split-reads.
+Common workflows for germline and somatic SV calling are outlined below.</p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">call</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">input.bam</span> <span class="pre">&gt;</span> <span class="pre">delly.vcf</span></code></p>
+<p>You can also specify an output file in <a class="reference external" href="http://samtools.github.io/bcftools/">BCF</a> format.</p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">call</span> <span class="pre">-o</span> <span class="pre">delly.bcf</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">input.bam</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">bcftools</span> <span class="pre">view</span> <span class="pre">delly.bcf</span> <span class="pre">&gt;</span> <span class="pre">delly.vcf</span></code></p>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
+<p>A small example is included for short-read, long-read and copy-number variant calling.</p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">call</span> <span class="pre">-g</span> <span class="pre">example/ref.fa</span> <span class="pre">example/sr.bam</span> <span class="pre">&gt;</span> <span class="pre">sr.vcf</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">lr</span> <span class="pre">-g</span> <span class="pre">example/ref.fa</span> <span class="pre">example/lr.bam</span> <span class="pre">&gt;</span> <span class="pre">lr.vcf</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">cnv</span> <span class="pre">-g</span> <span class="pre">example/ref.fa</span> <span class="pre">-m</span> <span class="pre">example/map.fa.gz</span> <span class="pre">example/sr.bam</span> <span class="pre">&gt;</span> <span class="pre">cnv.vcf</span></code></p>
+</section>
+<section id="somatic-sv-calling">
+<h2>Somatic SV calling<a class="headerlink" href="#somatic-sv-calling" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>At least one tumor sample and a matched control sample are required for SV discovery</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">call</span> <span class="pre">-x</span> <span class="pre">hg19.excl</span> <span class="pre">-o</span> <span class="pre">t1.bcf</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">tumor1.bam</span> <span class="pre">control1.bam</span></code></p>
+<ul class="simple">
+<li><p>Somatic pre-filtering requires a tab-delimited sample description file where the first column is the sample id (as in the VCF/BCF file) and the second column is either tumor or control.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">filter</span> <span class="pre">-f</span> <span class="pre">somatic</span> <span class="pre">-o</span> <span class="pre">t1.pre.bcf</span> <span class="pre">-s</span> <span class="pre">samples.tsv</span> <span class="pre">t1.bcf</span></code></p>
+<ul class="simple">
+<li><p>Genotype pre-filtered somatic sites across a larger panel of control samples to efficiently filter false postives and germline SVs. For performance reasons, this can be run in parallel for each sample of the control panel and you may want to combine multiple pre-filtered somatic site lists from multiple tumor samples.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">call</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-v</span> <span class="pre">t1.pre.bcf</span> <span class="pre">-o</span> <span class="pre">geno.bcf</span> <span class="pre">-x</span> <span class="pre">hg19.excl</span> <span class="pre">tumor1.bam</span> <span class="pre">control1.bam</span> <span class="pre">...</span> <span class="pre">controlN.bam</span></code></p>
+<ul class="simple">
+<li><p>Post-filter for somatic SVs using all control samples.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">filter</span> <span class="pre">-f</span> <span class="pre">somatic</span> <span class="pre">-o</span> <span class="pre">t1.somatic.bcf</span> <span class="pre">-s</span> <span class="pre">samples.tsv</span> <span class="pre">geno.bcf</span></code></p>
+</section>
+<section id="germline-sv-calling">
+<h2>Germline SV calling<a class="headerlink" href="#germline-sv-calling" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>SV calling is done by sample for high-coverage genomes or in small batches for low-coverage genomes</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">call</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-o</span> <span class="pre">s1.bcf</span> <span class="pre">-x</span> <span class="pre">hg19.excl</span> <span class="pre">sample1.bam</span></code></p>
+<ul class="simple">
+<li><p>Merge SV sites into a unified site list</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">merge</span> <span class="pre">-o</span> <span class="pre">sites.bcf</span> <span class="pre">s1.bcf</span> <span class="pre">s2.bcf</span> <span class="pre">...</span> <span class="pre">sN.bcf</span></code></p>
+<ul class="simple">
+<li><p>Genotype this merged SV site list across all samples. This can be run in parallel for each sample.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">call</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-v</span> <span class="pre">sites.bcf</span> <span class="pre">-o</span> <span class="pre">s1.geno.bcf</span> <span class="pre">-x</span> <span class="pre">hg19.excl</span> <span class="pre">s1.bam</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">call</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-v</span> <span class="pre">sites.bcf</span> <span class="pre">-o</span> <span class="pre">sN.geno.bcf</span> <span class="pre">-x</span> <span class="pre">hg19.excl</span> <span class="pre">sN.bam</span></code></p>
+<ul class="simple">
+<li><p>Merge all genotyped samples to get a single VCF/BCF using bcftools merge</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">bcftools</span> <span class="pre">merge</span> <span class="pre">-m</span> <span class="pre">id</span> <span class="pre">-O</span> <span class="pre">b</span> <span class="pre">-o</span> <span class="pre">merged.bcf</span> <span class="pre">s1.geno.bcf</span> <span class="pre">s2.geno.bcf</span> <span class="pre">...</span> <span class="pre">sN.geno.bcf</span></code></p>
+<ul class="simple">
+<li><p>Apply the germline SV filter which requires at least 20 unrelated samples</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">filter</span> <span class="pre">-f</span> <span class="pre">germline</span> <span class="pre">-o</span> <span class="pre">germline.bcf</span> <span class="pre">merged.bcf</span></code></p>
+</section>
+<section id="delly-for-long-reads-from-pacbio-or-ont">
+<h2>Delly for long reads from PacBio or ONT<a class="headerlink" href="#delly-for-long-reads-from-pacbio-or-ont" title="Link to this heading"></a></h2>
+<p>Delly also supports long-reads for SV discovery.</p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">lr</span> <span class="pre">-y</span> <span class="pre">ont</span> <span class="pre">-o</span> <span class="pre">delly.bcf</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">input.bam</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">lr</span> <span class="pre">-y</span> <span class="pre">pb</span> <span class="pre">-o</span> <span class="pre">delly.bcf</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">input.bam</span></code></p>
+</section>
+<section id="read-depth-profiles">
+<h2>Read-depth profiles<a class="headerlink" href="#read-depth-profiles" title="Link to this heading"></a></h2>
+<p>You can generate read-depth profiles with delly. This requires a mappability map which can be downloaded here:</p>
+<p><a class="reference external" href="https://gear.embl.de/data/delly/">Mappability Maps</a></p>
+<p>The command to count reads in 10kbp mappable windows and normalize the coverage is:</p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">cnv</span> <span class="pre">-a</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-m</span> <span class="pre">hg19.map</span> <span class="pre">input.bam</span></code></p>
+<p>The output file <code class="docutils literal notranslate"><span class="pre">out.cov.gz</span></code> can be plotted using <a class="reference external" href="https://www.r-project.org/">R</a> to generate normalized copy-number profiles:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Rscript</span> <span class="pre">R/rd.R</span> <span class="pre">out.cov.gz</span></code></p>
+</section>
+<section id="copy-number-segmentation">
+<h2>Copy-number segmentation<a class="headerlink" href="#copy-number-segmentation" title="Link to this heading"></a></h2>
+<p>Read-depth profiles can also be segmented at the same time.</p>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">cnv</span> <span class="pre">-a</span> <span class="pre">-u</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-m</span> <span class="pre">hg19.map</span> <span class="pre">input.bam</span></code></p>
+<p>The segmentation is in VCF format but you can extract a BED-like file using bcftools.</p>
+<p><code class="docutils literal notranslate"><span class="pre">bcftools</span> <span class="pre">query</span> <span class="pre">-f</span> <span class="pre">&quot;%CHROM\t%POS\t%INFO/END\t%ID\t[%RDCN]\n&quot;</span> <span class="pre">cnv.bcf</span> <span class="pre">&gt;</span> <span class="pre">segmentation.bed</span></code></p>
+<p>Plotting:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Rscript</span> <span class="pre">R/rd.R</span> <span class="pre">out.cov.gz</span> <span class="pre">segmentation.bed</span></code></p>
+</section>
+<section id="germline-cnv-calling">
+<h2>Germline CNV calling<a class="headerlink" href="#germline-cnv-calling" title="Link to this heading"></a></h2>
+<p>Delly uses GC and mappability fragment correction to call CNVs. This requires a <a class="reference external" href="https://gear.embl.de/data/delly/">mappability map</a>.</p>
+<ul class="simple">
+<li><p>Call CNVs for each sample and optionally refine breakpoints using delly SV calls</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">cnv</span> <span class="pre">-o</span> <span class="pre">c1.bcf</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-m</span> <span class="pre">hg19.map</span> <span class="pre">-l</span> <span class="pre">delly.sv.bcf</span> <span class="pre">input.bam</span></code></p>
+<ul class="simple">
+<li><p>Merge CNVs into a unified site list</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">merge</span> <span class="pre">-e</span> <span class="pre">-p</span> <span class="pre">-o</span> <span class="pre">sites.bcf</span> <span class="pre">-m</span> <span class="pre">1000</span> <span class="pre">-n</span> <span class="pre">100000</span> <span class="pre">c1.bcf</span> <span class="pre">c2.bcf</span> <span class="pre">...</span> <span class="pre">cN.bcf</span></code></p>
+<ul class="simple">
+<li><p>Genotype CNVs for each sample</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">cnv</span> <span class="pre">-u</span> <span class="pre">-v</span> <span class="pre">sites.bcf</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-m</span> <span class="pre">hg19.map</span> <span class="pre">-o</span> <span class="pre">geno1.bcf</span> <span class="pre">input.bam</span></code></p>
+<ul class="simple">
+<li><p>Merge genotypes using <a class="reference external" href="https://github.com/samtools/bcftools">bcftools</a></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">bcftools</span> <span class="pre">merge</span> <span class="pre">-m</span> <span class="pre">id</span> <span class="pre">-O</span> <span class="pre">b</span> <span class="pre">-o</span> <span class="pre">merged.bcf</span> <span class="pre">geno1.bcf</span> <span class="pre">...</span> <span class="pre">genoN.bcf</span></code></p>
+<ul class="simple">
+<li><p>Filter for germline CNVs</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">classify</span> <span class="pre">-f</span> <span class="pre">germline</span> <span class="pre">-o</span> <span class="pre">filtered.bcf</span> <span class="pre">merged.bcf</span></code></p>
+<ul class="simple">
+<li><p>Optional: Plot copy-number distribution for large number of samples (&gt;&gt;100)</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">bcftools</span> <span class="pre">query</span> <span class="pre">-f</span> <span class="pre">&quot;%ID[\t%RDCN]\n&quot;</span> <span class="pre">filtered.bcf</span> <span class="pre">&gt;</span> <span class="pre">plot.tsv</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">Rscript</span> <span class="pre">R/cnv.R</span> <span class="pre">plot.tsv</span></code></p>
+</section>
+<section id="somatic-copy-number-alterations-scnas">
+<h2>Somatic copy-number alterations (SCNAs)<a class="headerlink" href="#somatic-copy-number-alterations-scnas" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>For somatic copy-number alterations, delly first segments the tumor genome (<code class="docutils literal notranslate"><span class="pre">-u</span></code> is required). Depending on the coverage, tumor purity and heterogeneity you can adapt parameters <code class="docutils literal notranslate"><span class="pre">-z</span></code>, <code class="docutils literal notranslate"><span class="pre">-t</span></code> and <code class="docutils literal notranslate"><span class="pre">-x</span></code> which control the sensitivity of SCNA detection.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">cnv</span> <span class="pre">-u</span> <span class="pre">-z</span> <span class="pre">10000</span> <span class="pre">-o</span> <span class="pre">tumor.bcf</span> <span class="pre">-c</span> <span class="pre">tumor.cov.gz</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-m</span> <span class="pre">hg19.map</span> <span class="pre">tumor.bam</span></code></p>
+<ul class="simple">
+<li><p>Then these tumor SCNAs are genotyped in the control sample (<code class="docutils literal notranslate"><span class="pre">-u</span></code> is required).</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">cnv</span> <span class="pre">-u</span> <span class="pre">-v</span> <span class="pre">tumor.bcf</span> <span class="pre">-o</span> <span class="pre">control.bcf</span> <span class="pre">-g</span> <span class="pre">hg19.fa</span> <span class="pre">-m</span> <span class="pre">hg19.map</span> <span class="pre">control.bam</span></code></p>
+<ul class="simple">
+<li><p>The VCF IDs are matched between tumor and control. Thus, you can merge both files using <a class="reference external" href="https://github.com/samtools/bcftools">bcftools</a>.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">bcftools</span> <span class="pre">merge</span> <span class="pre">-m</span> <span class="pre">id</span> <span class="pre">-O</span> <span class="pre">b</span> <span class="pre">-o</span> <span class="pre">tumor_control.bcf</span> <span class="pre">tumor.bcf</span> <span class="pre">control.bcf</span></code></p>
+<ul class="simple">
+<li><p>Somatic filtering requires a tab-delimited sample description file where the first column is the sample id (as in the VCF/BCF file) and the second column is either tumor or control.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">delly</span> <span class="pre">classify</span> <span class="pre">-p</span> <span class="pre">-f</span> <span class="pre">somatic</span> <span class="pre">-o</span> <span class="pre">somatic.bcf</span> <span class="pre">-s</span> <span class="pre">samples.tsv</span> <span class="pre">tumor_control.bcf</span></code></p>
+<ul class="simple">
+<li><p>Optional: Plot the SCNAs using bcftools and R.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">bcftools</span> <span class="pre">query</span> <span class="pre">-s</span> <span class="pre">tumor</span> <span class="pre">-f</span> <span class="pre">&quot;%CHROM\t%POS\t%INFO/END\t%ID\t[%RDCN]\n&quot;</span> <span class="pre">somatic.bcf</span> <span class="pre">&gt;</span> <span class="pre">segmentation.bed</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">Rscript</span> <span class="pre">R/rd.R</span> <span class="pre">tumor.cov.gz</span> <span class="pre">segmentation.bed</span></code></p>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Visualization of SVs<br />
+You may want to try out <a class="reference external" href="https://github.com/tobiasrausch/wally">wally</a> to plot candidate structural variants. The paired-end coloring is explained in <a class="reference external" href="https://github.com/tobiasrausch/wally#paired-end-view">wally’s README</a> file.</p></li>
+<li><p>What is the smallest SV size Delly can call?<br />
+For short-reads, this depends on the sharpness of the insert size distribution. For an insert size of 200-300bp with a 20-30bp standard deviation, Delly starts to call reliable SVs &gt;=300bp. Delly also supports calling of small InDels using soft-clipped reads only, the smallest SV size called is 15bp. For long-reads, delly calls SVs &gt;=30bp.</p></li>
+<li><p>Can Delly be used on a non-diploid genome?<br />
+Yes and no. The SV site discovery works for any ploidy. However, Delly’s genotyping model assumes diploidy (hom. reference, het. and hom. alternative). The CNV calling allows to set the baseline ploidy on the command-line.</p></li>
+<li><p>Delly is running too slowly what can I do?<br />
+You should exclude telomere and centromere regions and also all unplaced contigs (<code class="docutils literal notranslate"><span class="pre">-x</span></code> command-line option). In addition, you can filter input reads more stringently using -q 20 and -s 15. Lastly, <code class="docutils literal notranslate"><span class="pre">-z</span></code> can be set to 5 for high-coverage data.</p></li>
+<li><p>Are non-unique alignments, multi-mappings and/or multiple split-read alignments allowed?<br />
+Delly expects two alignment records in the bam file for every paired-end, one for the first and one for the second read. Multiple split-read alignment records of a given read are allowed if and only if one of them is a primary alignment whereas all others are marked as secondary or supplementary. This is the default for bwa, minimap2 and many other aligners.</p></li>
+<li><p>What pre-processing of bam files is required?<br />
+Bam files need to be sorted, indexed and ideally duplicate marked.</p></li>
+<li><p>Usage/discussion mailing list?<br />
+There is a delly discussion group <a class="reference external" href="http://groups.google.com/d/forum/delly-users">delly-users</a>.</p></li>
+<li><p>Docker/Singularity support?<br />
+There is a delly <a class="reference external" href="https://hub.docker.com/r/dellytools/delly/">docker container</a> and <a class="reference external" href="https://github.com/dellytools/delly/releases">singularity container (*.sif file)</a> available.</p></li>
+<li><p>How can I compute a mappability map?<br />
+A basic mappability map can be built using <a class="reference external" href="https://github.com/gear-genomics/dicey">dicey</a>, <a class="reference external" href="https://github.com/samtools/samtools">samtools</a> and <a class="reference external" href="https://github.com/lh3/bwa">bwa</a> with the below commands (as an example for the sacCer3 reference):</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dicey</span> <span class="n">chop</span> <span class="n">sacCer3</span><span class="o">.</span><span class="n">fa</span>
+<span class="n">bwa</span> <span class="n">index</span> <span class="n">sacCer3</span><span class="o">.</span><span class="n">fa</span>
+<span class="n">bwa</span> <span class="n">mem</span> <span class="n">sacCer3</span><span class="o">.</span><span class="n">fa</span> <span class="n">read1</span><span class="o">.</span><span class="n">fq</span><span class="o">.</span><span class="n">gz</span> <span class="n">read2</span><span class="o">.</span><span class="n">fq</span><span class="o">.</span><span class="n">gz</span> <span class="o">|</span> <span class="n">samtools</span> <span class="n">sort</span> <span class="o">-@</span> <span class="mi">8</span> <span class="o">-</span><span class="n">o</span> <span class="n">srt</span><span class="o">.</span><span class="n">bam</span> <span class="o">-</span>
+<span class="n">samtools</span> <span class="n">index</span> <span class="n">srt</span><span class="o">.</span><span class="n">bam</span> 
+<span class="n">dicey</span> <span class="n">mappability2</span> <span class="n">srt</span><span class="o">.</span><span class="n">bam</span> 
+<span class="n">gunzip</span> <span class="nb">map</span><span class="o">.</span><span class="n">fa</span><span class="o">.</span><span class="n">gz</span> <span class="o">&amp;&amp;</span> <span class="n">bgzip</span> <span class="nb">map</span><span class="o">.</span><span class="n">fa</span> <span class="o">&amp;&amp;</span> <span class="n">samtools</span> <span class="n">faidx</span> <span class="nb">map</span><span class="o">.</span><span class="n">fa</span><span class="o">.</span><span class="n">gz</span> 
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Bioconda support?<br />
+Delly is available via <a class="reference external" href="http://bioconda.github.io/recipes/delly/README.html">bioconda</a>.</p></li>
+</ul>
+</section>
+<section id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Link to this heading"></a></h2>
+<p>Tobias Rausch, Thomas Zichner, Andreas Schlattl, Adrian M. Stuetz, Vladimir Benes, Jan O. Korbel.<br />
+DELLY: structural variant discovery by integrated paired-end and split-read analysis.<br />
+Bioinformatics. 2012 Sep 15;28(18):i333-i339.<br />
+<a class="reference external" href="https://doi.org/10.1093/bioinformatics/bts378">https://doi.org/10.1093/bioinformatics/bts378</a></p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p>Delly is distributed under the BSD 3-Clause license. Consult the accompanying <a class="reference external" href="https://github.com/dellytools/delly/blob/main/LICENSE">LICENSE</a> file for more details.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

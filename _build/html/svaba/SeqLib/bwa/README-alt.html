@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For the Impatient &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">For the Impatient</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/svaba/SeqLib/bwa/README-alt.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="for-the-impatient">
+<h1>For the Impatient<a class="headerlink" href="#for-the-impatient" title="Link to this heading"></a></h1>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download bwakit (or from &lt;http://sourceforge.net/projects/bio-bwa/files/bwakit/&gt; manually)</span>
+wget<span class="w"> </span>-O-<span class="w"> </span>http://sourceforge.net/projects/bio-bwa/files/bwakit/bwakit-0.7.12_x64-linux.tar.bz2/download<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span>-dc<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>xf<span class="w"> </span>-
+<span class="c1"># Generate the GRCh38+ALT+decoy+HLA and create the BWA index</span>
+bwa.kit/run-gen-ref<span class="w"> </span>hs38DH<span class="w">   </span><span class="c1"># download GRCh38 and write hs38DH.fa</span>
+bwa.kit/bwa<span class="w"> </span>index<span class="w"> </span>hs38DH.fa<span class="w">  </span><span class="c1"># create BWA index</span>
+<span class="c1"># mapping</span>
+bwa.kit/run-bwamem<span class="w"> </span>-o<span class="w"> </span>out<span class="w"> </span>-H<span class="w"> </span>hs38DH.fa<span class="w"> </span>read1.fq<span class="w"> </span>read2.fq<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w">  </span><span class="c1"># skip &quot;|sh&quot; to show command lines</span>
+</pre></div>
+</div>
+<p>This generates <code class="docutils literal notranslate"><span class="pre">out.aln.bam</span></code> as the final alignment, <code class="docutils literal notranslate"><span class="pre">out.hla.top</span></code> for best HLA
+genotypes on each gene and <code class="docutils literal notranslate"><span class="pre">out.hla.all</span></code> for other possible HLA genotypes.
+Please check out <a class="reference external" href="https://github.com/lh3/bwa/tree/master/bwakit">bwa/bwakit/README.md</a> for details.</p>
+</section>
+<section id="background">
+<h1>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h1>
+<p>GRCh38 consists of several components: chromosomal assembly, unlocalized contigs
+(chromosome known but location unknown), unplaced contigs (chromosome unknown)
+and ALT contigs (long clustered variations). The combination of the first three
+components is called the <em>primary assembly</em>. It is recommended to use the
+complete primary assembly for all analyses. Using ALT contigs in read mapping is
+tricky.</p>
+<p>GRCh38 ALT contigs are totaled 109Mb in length, spanning 60Mbp of the primary
+assembly. However, sequences that are highly diverged from the primary assembly
+only contribute a few million bp. Most subsequences of ALT contigs are nearly
+identical to the primary assembly. If we align sequence reads to GRCh38+ALT
+blindly, we will get many additional reads with zero mapping quality and miss
+variants on them. It is crucial to make mappers aware of ALTs.</p>
+<p>BWA-MEM is ALT-aware. It essentially computes mapping quality across the
+non-redundant content of the primary assembly plus the ALT contigs and is free
+of the problem above.</p>
+</section>
+<section id="methods">
+<h1>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h1>
+<section id="sequence-alignment">
+<h2>Sequence alignment<a class="headerlink" href="#sequence-alignment" title="Link to this heading"></a></h2>
+<p>As of now, ALT mapping is done in two separate steps: BWA-MEM mapping and
+postprocessing. The <code class="docutils literal notranslate"><span class="pre">bwa.kit/run-bwamem</span></code> script performs the two steps when ALT
+contigs are present. The following picture shows an example about how BWA-MEM
+infers mapping quality and reports alignment after step 2:</p>
+<p><img alt="" src="http://lh3lh3.users.sourceforge.net/images/alt-demo.png" /></p>
+<section id="step-1-bwa-mem-mapping">
+<h3>Step 1: BWA-MEM mapping<a class="headerlink" href="#step-1-bwa-mem-mapping" title="Link to this heading"></a></h3>
+<p>At this step, BWA-MEM reads the ALT contig names from “<em>idxbase</em>.alt”, ignoring
+the ALT-to-ref alignment, and labels a potential hit as <em>ALT</em> or <em>non-ALT</em>,
+depending on whether the hit lands on an ALT contig or not. BWA-MEM then reports
+alignments and assigns mapQ following these two rules:</p>
+<ol class="arabic simple">
+<li><p>The mapQ of a non-ALT hit is computed across non-ALT hits only. The mapQ of
+an ALT hit is computed across all hits.</p></li>
+<li><p>If there are no non-ALT hits, the best ALT hit is outputted as the primary
+alignment. If there are both ALT and non-ALT hits, non-ALT hits will be
+primary and ALT hits be supplementary (SAM flag 0x800).</p></li>
+</ol>
+<p>In theory, non-ALT alignments from step 1 should be identical to alignments
+against the reference genome with ALT contigs. In practice, the two types of
+alignments may differ in rare cases due to seeding heuristics. When an ALT hit
+is significantly better than non-ALT hits, BWA-MEM may miss seeds on the
+non-ALT hits.</p>
+<p>If we don’t care about ALT hits, we may skip postprocessing (step 2).
+Nonetheless, postprocessing is recommended as it improves mapQ and gives more
+information about ALT hits.</p>
+</section>
+<section id="step-2-postprocessing">
+<h3>Step 2: Postprocessing<a class="headerlink" href="#step-2-postprocessing" title="Link to this heading"></a></h3>
+<p>Postprocessing is done with a separate script <code class="docutils literal notranslate"><span class="pre">bwa-postalt.js</span></code>. It reads all
+potential hits reported in the XA tag, lifts ALT hits to the chromosomal
+positions using the ALT-to-ref alignment, groups them based on overlaps between
+their lifted positions, and then re-estimates mapQ across the best scoring hit
+in each group. Being aware of the ALT-to-ref alignment, this script can greatly
+improve mapQ of ALT hits and occasionally improve mapQ of non-ALT hits. It also
+writes each hit overlapping the reported hit into a separate SAM line. This
+enables variant calling on each ALT contig independent of others.</p>
+</section>
+</section>
+<section id="on-the-completeness-of-grch38-alt">
+<h2>On the completeness of GRCh38+ALT<a class="headerlink" href="#on-the-completeness-of-grch38-alt" title="Link to this heading"></a></h2>
+<p>While GRCh38 is much more complete than GRCh37, it is still missing some true
+human sequences. To make sure every piece of sequence in the reference assembly
+is correct, the <a class="reference external" href="http://www.ncbi.nlm.nih.gov/projects/genome/assembly/grc/">Genome Reference Consortium</a> (GRC) require each ALT contig
+to have enough support from multiple sources before considering to add it to the
+reference assembly. This careful and sophisticated procedure has left out some
+sequences, one of which is <a class="reference external" href="https://gist.github.com/lh3/9935148b71f04ba1a8cc">this example</a>, a 10kb contig assembled from
+CHM1 short reads and present also in NA12878. You can try <a class="reference external" href="https://genome.ucsc.edu/cgi-bin/hgBlat">BLAT</a> or
+<a class="reference external" href="http://blast.st-va.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&amp;amp;PAGE_TYPE=BlastSearch&amp;amp;LINK_LOC=blasthome">BLAST</a> to see where it maps.</p>
+<p>For a more complete reference genome, we compiled a new set of decoy sequences
+from GenBank clones and the de novo assembly of 254 public <a class="reference external" href="http://www.simonsfoundation.org/life-sciences/simons-genome-diversity-project/">SGDP</a> samples.
+The sequences are included in <code class="docutils literal notranslate"><span class="pre">hs38DH-extra.fa</span></code> from the <a class="reference external" href="https://sourceforge.net/projects/bio-bwa/files/bwakit">BWA binary
+package</a>.</p>
+<p>In addition to decoy, we also put multiple alleles of HLA genes in
+<code class="docutils literal notranslate"><span class="pre">hs38DH-extra.fa</span></code>. These genomic sequences were acquired from <a class="reference external" href="http://www.ebi.ac.uk/ipd/imgt/hla/">IMGT/HLA</a>,
+version 3.18.0 and are used to collect reads sequenced from these genes.</p>
+</section>
+<section id="hla-typing">
+<h2>HLA typing<a class="headerlink" href="#hla-typing" title="Link to this heading"></a></h2>
+<p>HLA genes are known to be associated with many autoimmune diseases, infectious
+diseases and drug responses. They are among the most important genes but are
+rarely studied by WGS projects due to the high sequence divergence between
+HLA genes and the reference genome in these regions.</p>
+<p>By including the HLA gene regions in the reference assembly as ALT contigs, we
+are able to effectively identify reads coming from these genes. We also provide
+a pipeline, which is included in the <a class="reference external" href="https://sourceforge.net/projects/bio-bwa/files/bwakit">BWA binary package</a>, to type the
+several classic HLA genes. The pipeline is conceptually simple. It de novo
+assembles sequence reads mapped to each gene, aligns exon sequences of each
+allele to the assembled contigs and then finds the pairs of alleles that best
+explain the contigs. In practice, however, the completeness of IMGT/HLA and
+copy-number changes related to these genes are not so straightforward to
+resolve. HLA typing may not always be successful. Users may also consider to use
+other programs for typing such as <a class="reference external" href="http://genomemedicine.com/content/4/12/95">Warren et al (2012)</a>, <a class="reference external" href="http://nar.oxfordjournals.org/content/41/14/e142.full.pdf+html">Liu et al
+(2013)</a>, <a class="reference external" href="http://www.biomedcentral.com/1471-2164/15/325">Bai et al (2014)</a> and <a class="reference external" href="http://biorxiv.org/content/early/2014/07/08/006973">Dilthey et al (2014)</a>, though
+most of them are distributed under restrictive licenses.</p>
+</section>
+</section>
+<section id="preliminary-evaluation">
+<h1>Preliminary Evaluation<a class="headerlink" href="#preliminary-evaluation" title="Link to this heading"></a></h1>
+<p>To check whether GRCh38 is better than GRCh37, we mapped the CHM1 and NA12878
+unitigs to GRCh37 primary (hs37), GRCh38 primary (hs38) and GRCh38+ALT+decoy
+(hs38DH), and called small variants from the alignment. CHM1 is haploid.
+Ideally, heterozygous calls are false positives (FP). NA12878 is diploid. The
+true positive (TP) heterozygous calls from NA12878 are approximately equal
+to the difference between NA12878 and CHM1 heterozygous calls. A better assembly
+should yield higher TP and lower FP. The following table shows the numbers for
+these assemblies:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Assembly</p></th>
+<th class="head text-right"><p>hs37</p></th>
+<th class="head text-right"><p>hs38</p></th>
+<th class="head text-right"><p>hs38DH</p></th>
+<th class="head text-right"><p>CHM1_1.1</p></th>
+<th class="head text-right"><p>huref</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>FP</p></td>
+<td class="text-right"><p>255706</p></td>
+<td class="text-right"><p>168068</p></td>
+<td class="text-right"><p>142516</p></td>
+<td class="text-right"><p>307172</p></td>
+<td class="text-right"><p>575634</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>TP</p></td>
+<td class="text-right"><p>2142260</p></td>
+<td class="text-right"><p>2163113</p></td>
+<td class="text-right"><p>2150844</p></td>
+<td class="text-right"><p>2167235</p></td>
+<td class="text-right"><p>2137053</p></td>
+</tr>
+</tbody>
+</table>
+<p>With this measurement, hs38 is clearly better than hs37. Genome hs38DH reduces
+FP by ~25k but also reduces TP by ~12k. We manually inspected variants called
+from hs38 only and found the majority of them are associated with excessive read
+depth, clustered variants or weak alignment. We believe most hs38-only calls are
+problematic. In addition, if we compare two NA12878 replicates from HiSeq X10
+with nearly identical library construction, the difference is ~140k, an order
+of magnitude higher than the difference between hs38 and hs38DH. ALT contigs,
+decoy and HLA genes in hs38DH improve variant calling and enable the analyses of
+ALT contigs and HLA typing at little cost.</p>
+</section>
+<section id="problems-and-future-development">
+<h1>Problems and Future Development<a class="headerlink" href="#problems-and-future-development" title="Link to this heading"></a></h1>
+<p>There are some uncertainties about ALT mappings - we are not sure whether they
+help biological discovery and don’t know the best way to analyze them. Without
+clear demand from downstream analyses, it is very difficult to design the
+optimal mapping strategy. The current BWA-MEM method is just a start. If it
+turns out to be useful in research, we will probably rewrite bwa-postalt.js in C
+for performance; if not, we may make changes. It is also possible that we might
+make breakthrough on the representation of multiple genomes, in which case, we
+can even get rid of ALT contigs for good.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

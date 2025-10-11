@@ -1,0 +1,437 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Documentation &mdash; stGrads 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            stGrads
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../t1_visium.html">10x Visium Tutorial (PDAC demo)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../t2_visiumHD.html">10x Visium HD Tutorial (internal datasets)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">stGrads</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/svaba/SeqLib/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><a class="reference external" href="https://travis-ci.org/walaj/SeqLib"><img alt="Build Status" src="https://travis-ci.org/walaj/SeqLib.svg?branch=master" /></a>
+<a class="reference external" href="https://coveralls.io/github/walaj/SeqLib?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/github/walaj/SeqLib/badge.svg?branch=master" /></a></p>
+<p>C++ interface to HTSlib, BWA-MEM and Fermi</p>
+<p><strong>License:</strong> <a class="reference external" href="https://github.com/walaj/SeqLib/blob/master/LICENSE">Apache2</a></p>
+<section id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="http://walaj.github.io/seqlibdocs/doxygen">API Documentation</a></p>
+</section>
+<section id="citation">
+<h1>Citation<a class="headerlink" href="#citation" title="Link to this heading"></a></h1>
+<p>If you use SeqLib in your applications, please cite: http://bioinformatics.oxfordjournals.org/content/early/2016/12/21/bioinformatics.btw741.full.pdf+html</p>
+<p>Note that the values for the SeqAn benchmarking in Table 2 should be corrected to 7.7 Gb memory and 33.92 seconds in CPU time, when compiling SeqAn with <code class="docutils literal notranslate"><span class="pre">-O3</span> <span class="pre">-DNDEBUG</span></code>. SeqAn also does full string decompression.
+Wall times for SeqAn may be shorter than CPU time because it uses embedded multi-threading during BAM IO.</p>
+</section>
+<section id="table-of-contents">
+<h1>Table of contents<a class="headerlink" href="#table-of-contents" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="#installation"><span class="xref myst">Installation</span></a></p></li>
+<li><p><a class="reference internal" href="#integrating-into-build-system"><span class="xref myst">Integrating into build system</span></a></p></li>
+<li><p><a class="reference internal" href="#description"><span class="xref myst">Description</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#memory-management"><span class="xref myst">Memory management</span></a></p></li>
+<li><p><a class="reference internal" href="#other-c++-apis"><span class="xref myst">Other C++ APIs</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#command-line-usage"><span class="xref myst">Command line usage</span></a></p></li>
+<li><p><a class="reference internal" href="#examples"><span class="xref myst">Examples</span></a></p></li>
+<li><p><a class="reference internal" href="#attributions"><span class="xref myst">Attributions</span></a></p></li>
+</ul>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>#######</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--recursive<span class="w"> </span>https://github.com/walaj/SeqLib.git
+<span class="nb">cd</span><span class="w"> </span>SeqLib
+<span class="c1">## cd htslib &amp;&amp; ./configure --enable-libcurl &amp;&amp; cd .. # support for remote (FTP/HTTPS/Google etc) BAM access</span>
+./configure<span class="w"> </span><span class="c1">## or: ./configure LDFLAGS=&#39;-lcurl -lcrypto&#39; # for remote support</span>
+make<span class="w"> </span><span class="c1">## for c++11 (req. for AhoCorasick), run as: make CXXFLAGS=&#39;-std=c++11&#39;</span>
+make<span class="w"> </span>install
+make<span class="w"> </span>seqtools<span class="w"> </span><span class="c1">## for the command line version</span>
+</pre></div>
+</div>
+<p>I have successfully compiled with GCC-4.5+ and Clang on Linux and OSX.</p>
+<p>SeqLib is compatible with c++98 and later.</p>
+</section>
+<section id="integrating-into-build-system">
+<h2>Integrating into build system<a class="headerlink" href="#integrating-into-build-system" title="Link to this heading"></a></h2>
+<p>After building, you will need to add the relevant header directories:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">SEQ</span><span class="o">=</span>&lt;path_to_seqlib_git_repos&gt;
+<span class="nv">C_INCLUDE_PATH</span><span class="o">=</span><span class="nv">$C_INCLUDE_PATH</span>:<span class="nv">$SEQ</span>:<span class="nv">$SEQ</span>/htslib
+</pre></div>
+</div>
+<p>And need to link the SeqLib static library and Fermi, BWA and HTSlib libraries</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">SEQ</span><span class="o">=</span>&lt;path_to_seqlib&gt;
+<span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$LDFLAGS</span><span class="s2"> </span><span class="nv">$SEQ</span><span class="s2">/bin/libseqlib.a </span><span class="nv">$SEQ</span><span class="s2">/bin/libbwa.a </span><span class="nv">$SEQ</span><span class="s2">/bin/libfml.a </span><span class="nv">$SEQ</span><span class="s2">/bin/libhts.a&quot;</span>
+</pre></div>
+</div>
+<p>To add support for reading BAMs, etc with HTTPS, FTP, S3, Google cloud, etc, you must compile and link with libcurl.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">## set hts to build with libcurl links and hfile_libcurl.c</span>
+<span class="nb">cd</span><span class="w"> </span>SeqLib/htslib
+./configure<span class="w"> </span>--enable-libcurl<span class="w"> </span>
+<span class="c1">## compile seqlib with libcurl support</span>
+<span class="nb">cd</span><span class="w"> </span>../<span class="w"> </span><span class="c1"># back to SeqLib main directory</span>
+./configure<span class="w"> </span><span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-lcurl -lcrypto&quot;</span>
+make<span class="w"> </span>
+make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Remember then to then link any projects made with SeqLib with the additional <code class="docutils literal notranslate"><span class="pre">-lcurl</span> <span class="pre">-lcrypto</span></code> flags.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p>SeqLib is a C++ library for querying BAM/SAM/CRAM files, performing
+BWA-MEM operations in memory, and performing sequence assembly. Core operations
+in SeqLib are peformed by:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/samtools/htslib.git">HTSlib</a></p></li>
+<li><p><a class="reference external" href="https://github.com/lh3/bwa">BWA-MEM</a> (Apache2 branch)</p></li>
+<li><p><a class="reference external" href="https://github.com/lh3/fermi-lite">FermiKit</a></p></li>
+</ul>
+<p>The primary developer for these three projects is Heng Li.</p>
+<p>SeqLib also has support for storing and manipulating genomic intervals via <code class="docutils literal notranslate"><span class="pre">GenomicRegion</span></code> and <code class="docutils literal notranslate"><span class="pre">GenomicRegionCollection</span></code>.
+It uses an <a class="reference external" href="https://github.com/ekg/intervaltree.git">interval tree</a> (provided by Erik Garrison &#64;ekg) to provide for rapid interval queries.</p>
+<p>SeqLib is built to be extendable. See <a class="reference external" href="https://github.com/walaj/VariantBam">VariantBam</a> for examples of how to take advantage of C++
+class extensions to build off of the SeqLib base functionality.</p>
+</section>
+<section id="memory-management">
+<h2>Memory management<a class="headerlink" href="#memory-management" title="Link to this heading"></a></h2>
+<p>SeqLib is built to automatically handle memory management of C code from BWA-MEM and HTSlib by using C++ smart
+pointers that handle freeing memory automatically. One of the
+main motivations behind SeqLib is that all access to sequencing reads, BWA, etc should
+completely avoid <code class="docutils literal notranslate"><span class="pre">malloc</span></code> and <code class="docutils literal notranslate"><span class="pre">free</span></code>. In SeqLib all the mallocs/frees are handled automatically in the constructors and
+destructors.</p>
+</section>
+<section id="other-c-apis">
+<h2>Other C++ APIs<a class="headerlink" href="#other-c-apis" title="Link to this heading"></a></h2>
+<p>There are overlaps between this project and <a class="reference external" href="https://github.com/pezmaster31/bamtools">BamTools</a> from Derek Barnett, <a class="reference external" href="https://github.com/broadinstitute/gamgee">Gamgee</a>
+from the Broad Institute, and <a class="reference external" href="https://www.seqan.de">SeqAn</a> from Freie Universitat Berlin. These projects
+provide excellent and high quality APIs. SeqLib provides further performance enhancement and new capabilites for certain classes of
+bioinformatics problems.</p>
+<p>Some differences:</p>
+<ul class="simple">
+<li><p>SeqLib has ~2-4x faster read/write speed over BamTools and lower memory footprint.</p></li>
+<li><p>SeqLib has support for CRAM file</p></li>
+<li><p>SeqLib provides in memory access to BWA-MEM, BLAT, chromosome aware interval tree, read correction, and sequence assembly with Fermi.</p></li>
+<li><p>SeqAn provide a substantial amount of additional capabilites not in SeqLib, including graph operations and an expanded suite of multi-sequence alignments.</p></li>
+<li><p>SeqAn embeds multi-threading into some functionality like BAM IO to improve wall times.</p></li>
+</ul>
+<p>For your particular application, our hope is that SeqLib will provide a comprehensive and powerful envrionment to develop
+bioinformatics tools, or to be used in conjuction with the capablities in SeqAn and BamTools. Feature requests and comments are welcomed.</p>
+</section>
+<section id="command-line-usage">
+<h2>Command Line Usage<a class="headerlink" href="#command-line-usage" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">## BFC correction (input mode -m is b (BAM/SAM/CRAM), output mode -w is SAM stream</span>
+samtools<span class="w"> </span>view<span class="w"> </span><span class="k">in</span>.bam<span class="w"> </span>-h<span class="w"> </span><span class="m">1</span>:1,000,000-1,002,000<span class="w"> </span><span class="p">|</span><span class="w"> </span>seqtools<span class="w"> </span>bfc<span class="w"> </span>-<span class="w"> </span>-G<span class="w"> </span><span class="nv">$REF</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>samtools<span class="w"> </span>sort<span class="w"> </span>-<span class="w"> </span>-m<span class="w"> </span>4g<span class="w"> </span>-o<span class="w"> </span>corrected.bam
+
+<span class="c1">## Without a pipe, write to BAM</span>
+seqtools<span class="w"> </span>bfc<span class="w"> </span><span class="k">in</span>.bam<span class="w"> </span>-G<span class="w"> </span><span class="nv">$REF</span><span class="w"> </span>-b<span class="w"> </span>&gt;<span class="w"> </span>corrected.bam
+
+<span class="c1">## Skip realignment, send to fasta</span>
+seqtools<span class="w"> </span>bfc<span class="w"> </span><span class="k">in</span>.bam<span class="w"> </span>-f<span class="w"> </span>&gt;<span class="w"> </span>corrected.fasta
+
+<span class="c1">## Input as gzipped or plain fasta (or fastq), send to aligned BAM</span>
+seqtools<span class="w"> </span>bfc<span class="w"> </span>--infasta<span class="w"> </span><span class="k">in</span>.fasta<span class="w"> </span>-G<span class="w"> </span><span class="nv">$REG</span><span class="w"> </span>-b<span class="w"> </span>&gt;<span class="w"> </span>corrected.bam
+
+
+<span class="c1">##### ASSEMBLY (same patterns as above)</span>
+samtools<span class="w"> </span>view<span class="w"> </span><span class="k">in</span>.bam<span class="w"> </span>-h<span class="w"> </span><span class="m">1</span>:1,000,000-1,002,000<span class="w"> </span><span class="p">|</span><span class="w"> </span>seqtools<span class="w"> </span>fml<span class="w"> </span>-<span class="w"> </span>-G<span class="w"> </span><span class="nv">$REF</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>samtools<span class="w"> </span>sort<span class="w"> </span>-<span class="w"> </span>-m<span class="w"> </span>4g<span class="w"> </span>-o<span class="w"> </span>assembled.bam
+</pre></div>
+</div>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<section id="targeted-re-alignment-of-reads-to-a-given-region-with-bwa-mem">
+<h3>Targeted re-alignment of reads to a given region with BWA-MEM<a class="headerlink" href="#targeted-re-alignment-of-reads-to-a-given-region-with-bwa-mem" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;SeqLib/RefGenome.h&quot;</span>
+<span class="c1">#include &quot;SeqLib/BWAWrapper.h&quot;</span>
+<span class="n">using</span> <span class="n">namespace</span> <span class="n">SeqLib</span><span class="p">;</span>
+<span class="n">RefGenome</span> <span class="n">ref</span><span class="p">;</span>
+<span class="n">ref</span><span class="o">.</span><span class="n">LoadIndex</span><span class="p">(</span><span class="s2">&quot;hg19.fasta&quot;</span><span class="p">);</span>
+
+<span class="o">//</span> <span class="n">get</span> <span class="n">sequence</span> <span class="n">at</span> <span class="n">given</span> <span class="n">locus</span>
+<span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">seq</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">QueryRegion</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">,</span><span class="mi">1001000</span><span class="p">);</span>
+
+<span class="o">//</span> <span class="n">Make</span> <span class="n">an</span> <span class="ow">in</span><span class="o">-</span><span class="n">memory</span> <span class="n">BWA</span><span class="o">-</span><span class="n">MEM</span> <span class="n">index</span> <span class="n">of</span> <span class="n">region</span>
+<span class="n">BWAWrapper</span> <span class="n">bwa</span><span class="p">;</span>
+<span class="n">UnalignedSequenceVector</span> <span class="n">usv</span> <span class="o">=</span> <span class="p">{{</span><span class="s2">&quot;chr_reg1&quot;</span><span class="p">,</span> <span class="n">seq</span><span class="p">}};</span>
+<span class="n">bwa</span><span class="o">.</span><span class="n">ConstructIndex</span><span class="p">(</span><span class="n">usv</span><span class="p">);</span>
+
+<span class="o">//</span> <span class="n">align</span> <span class="n">an</span> <span class="n">example</span> <span class="n">string</span> <span class="k">with</span> <span class="n">BWA</span><span class="o">-</span><span class="n">MEM</span>
+<span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">querySeq</span> <span class="o">=</span> <span class="s2">&quot;CAGCCTCACCCAGGAAAGCAGCTGGGGGTCCACTGGGCTCAGGGAAG&quot;</span><span class="p">;</span>
+<span class="n">BamRecordVector</span> <span class="n">results</span><span class="p">;</span>
+<span class="o">//</span> <span class="n">hardclip</span><span class="o">=</span><span class="n">false</span><span class="p">,</span> <span class="n">secondary</span> <span class="n">score</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="nb">max</span> <span class="n">secondary</span> <span class="n">alignments</span><span class="o">=</span><span class="mi">10</span>
+<span class="n">bwa</span><span class="o">.</span><span class="n">AlignSequence</span><span class="p">(</span><span class="n">querySeq</span><span class="p">,</span> <span class="s2">&quot;my_seq&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">false</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span> 
+
+<span class="o">//</span> <span class="nb">print</span> <span class="n">results</span> <span class="n">to</span> <span class="n">stdout</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">auto</span><span class="o">&amp;</span> <span class="n">i</span> <span class="p">:</span> <span class="n">results</span><span class="p">)</span>
+    <span class="n">std</span><span class="p">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="read-a-bam-line-by-line-realign-reads-with-bwa-mem-write-to-new-bam">
+<h3>Read a BAM line by line, realign reads with BWA-MEM, write to new BAM<a class="headerlink" href="#read-a-bam-line-by-line-realign-reads-with-bwa-mem-write-to-new-bam" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;SeqLib/BamReader.h&quot;</span>
+<span class="c1">#include &quot;SeqLib/BWAWrapper.h&quot;</span>
+<span class="n">using</span> <span class="n">namespace</span> <span class="n">SeqLib</span><span class="p">;</span>
+
+<span class="o">//</span> <span class="nb">open</span> <span class="n">the</span> <span class="n">reader</span> <span class="n">BAM</span><span class="o">/</span><span class="n">SAM</span><span class="o">/</span><span class="n">CRAM</span>
+<span class="n">BamReader</span> <span class="n">bw</span><span class="p">;</span>
+<span class="n">bw</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;test.bam&quot;</span><span class="p">);</span>
+
+<span class="o">//</span> <span class="nb">open</span> <span class="n">a</span> <span class="n">new</span> <span class="n">interface</span> <span class="n">to</span> <span class="n">BWA</span><span class="o">-</span><span class="n">MEM</span>
+<span class="n">BWAWrapper</span> <span class="n">bwa</span><span class="p">;</span>
+<span class="n">bwa</span><span class="o">.</span><span class="n">LoadIndex</span><span class="p">(</span><span class="s2">&quot;hg19.fasta&quot;</span><span class="p">);</span>
+
+<span class="o">//</span> <span class="nb">open</span> <span class="n">the</span> <span class="n">output</span> <span class="n">BAM</span>
+<span class="n">BamWriter</span> <span class="n">writer</span><span class="p">;</span> <span class="o">//</span> <span class="ow">or</span> <span class="n">writer</span><span class="p">(</span><span class="n">SeqLib</span><span class="p">::</span><span class="n">SAM</span><span class="p">)</span> <span class="ow">or</span> <span class="n">writer</span><span class="p">(</span><span class="n">SeqLib</span><span class="p">::</span><span class="n">CRAM</span><span class="p">)</span> 
+<span class="n">writer</span><span class="o">.</span><span class="n">SetWriteHeader</span><span class="p">(</span><span class="n">bwa</span><span class="o">.</span><span class="n">HeaderFromIndex</span><span class="p">());</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;out.bam&quot;</span><span class="p">);</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">WriteHeader</span><span class="p">();</span>
+
+<span class="n">BamRecord</span> <span class="n">r</span><span class="p">;</span>
+<span class="nb">bool</span> <span class="n">hardclip</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span>
+<span class="nb">float</span> <span class="n">secondary_cutoff</span> <span class="o">=</span> <span class="mf">0.90</span><span class="p">;</span> <span class="o">//</span> <span class="n">secondary</span> <span class="n">alignments</span> <span class="n">must</span> <span class="n">have</span> <span class="n">score</span> <span class="o">&gt;=</span> <span class="mf">0.9</span><span class="o">*</span><span class="n">top_score</span>
+<span class="nb">int</span> <span class="n">secondary_cap</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> <span class="o">//</span> <span class="nb">max</span> <span class="n">number</span> <span class="n">of</span> <span class="n">secondary</span> <span class="n">alignments</span> <span class="n">to</span> <span class="k">return</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">GetNextRecord</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="p">{</span>
+      <span class="n">BamRecordVector</span> <span class="n">results</span><span class="p">;</span> <span class="o">//</span> <span class="n">alignment</span> <span class="n">results</span> <span class="p">(</span><span class="n">can</span> <span class="n">have</span> <span class="n">multiple</span> <span class="n">alignments</span><span class="p">)</span>
+      <span class="n">bwa</span><span class="o">.</span><span class="n">AlignSequence</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(),</span> <span class="n">r</span><span class="o">.</span><span class="n">Qname</span><span class="p">(),</span> <span class="n">results</span><span class="p">,</span> <span class="n">hardclip</span><span class="p">,</span> <span class="n">secondary_cutoff</span><span class="p">,</span> <span class="n">secondary_cap</span><span class="p">);</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="n">auto</span><span class="o">&amp;</span> <span class="n">i</span> <span class="p">:</span> <span class="n">results</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">WriteRecord</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="perform-sequence-assembly-with-fermi-directly-from-a-bam">
+<h3>Perform sequence assembly with Fermi directly from a BAM<a class="headerlink" href="#perform-sequence-assembly-with-fermi-directly-from-a-bam" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+<span class="c1">#include &quot;SeqLib/FermiAssembler.h&quot;</span>
+<span class="n">using</span> <span class="n">namespace</span> <span class="n">SeqLib</span><span class="p">;</span>
+
+<span class="n">FermiAssembler</span> <span class="n">f</span><span class="p">;</span>
+
+<span class="o">//</span> <span class="n">read</span> <span class="ow">in</span> <span class="n">data</span> <span class="kn">from</span><span class="w"> </span><span class="nn">a</span> <span class="n">BAM</span>
+<span class="n">BamReader</span> <span class="n">br</span><span class="p">;</span>
+<span class="n">br</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;test_data/small.bam&quot;</span><span class="p">);</span>
+
+<span class="o">//</span> <span class="n">retreive</span> <span class="n">sequencing</span> <span class="n">reads</span> <span class="p">(</span><span class="n">up</span> <span class="n">to</span> <span class="mi">20</span><span class="p">,</span><span class="mi">000</span><span class="p">)</span>
+<span class="n">BamRecord</span> <span class="n">r</span><span class="p">;</span>
+<span class="n">BamRecordVector</span> <span class="n">brv</span><span class="p">;</span>
+<span class="n">size_t</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">while</span><span class="p">(</span><span class="n">br</span><span class="o">.</span><span class="n">GetNextRead</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">count</span><span class="o">++</span> <span class="o">&lt;</span> <span class="mi">20000</span><span class="p">)</span> 
+  <span class="n">brv</span><span class="o">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">r</span><span class="p">);</span>
+
+<span class="o">//</span> <span class="n">add</span> <span class="n">the</span> <span class="n">reads</span> <span class="ow">and</span> <span class="n">error</span> <span class="n">correct</span> <span class="n">them</span>  
+<span class="n">f</span><span class="o">.</span><span class="n">AddReads</span><span class="p">(</span><span class="n">brv</span><span class="p">);</span>
+<span class="n">f</span><span class="o">.</span><span class="n">CorrectReads</span><span class="p">();</span>
+
+<span class="o">//</span> <span class="n">peform</span> <span class="n">the</span> <span class="n">assembly</span>
+<span class="n">f</span><span class="o">.</span><span class="n">PerformAssembly</span><span class="p">();</span>
+
+<span class="o">//</span> <span class="n">retrieve</span> <span class="n">the</span> <span class="n">contigs</span>
+<span class="n">std</span><span class="p">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="p">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">contigs</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">GetContigs</span><span class="p">();</span>
+
+<span class="o">//</span> <span class="n">write</span> <span class="k">as</span> <span class="n">a</span> <span class="n">fasta</span> <span class="n">to</span> <span class="n">stdout</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">contigs</span><span class="o">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">std</span><span class="p">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;&gt;contig&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span> <span class="o">&lt;&lt;</span> <span class="n">contigs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="plot-a-collection-of-gapped-alignments">
+<h3>Plot a collection of gapped alignments<a class="headerlink" href="#plot-a-collection-of-gapped-alignments" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>using namespace SeqLib;
+BamReader r;
+r.Open(&quot;test_data/small.bam&quot;);
+
+GenomicRegion gr(&quot;X:1,002,942-1,003,294&quot;, r.Header());
+r.SetRegion(gr);
+
+SeqPlot s;
+s.SetView(gr);
+
+BamRecord rec;
+BamRecordVector brv;
+while(r.GetNextRecord(rec))
+  if (!rec.CountNBases() &amp;&amp; rec.MappedFlag())
+    brv.push_back(rec);
+s.SetPadding(20);
+
+std::cout &lt;&lt; s.PlotAlignmentRecords(brv);
+</pre></div>
+</div>
+<p>Trimmed output from above (NA12878):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CTATCTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTGTCCATCCATCCATCCATCCA</span>
+<span class="n">CTATCTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTAT</span>                    <span class="n">CATCCATCCATCCATCCATCCACCCATTCATCCATCCACCTATCCATCTATCAATCCATCCATCCATCCA</span>
+ <span class="n">TATCTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTG</span><span class="o">----</span><span class="n">TCCATCCATCCATCCATCCACCCA</span>              
+ <span class="n">TATCTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTGTCCATCCATCCATCCATC</span>                        
+ <span class="n">TATCTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTG</span><span class="o">----</span><span class="n">TCCATCCATCCATCCATCCACCCA</span>              
+  <span class="n">ATCTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTG</span><span class="o">----</span><span class="n">TCCATCCATCCATCCATCCACCCAT</span>             
+   <span class="n">TCTATCTATCTCTTCTTCTGTCCGCTCATGTGTCTGTCCATCTATCTATC</span>                    <span class="n">GTCCATCCATCCATCCATCCATCCATCCACCCATTCATCCATCCACCTATCCATCTATCAATCCATCCATCCATCCATCCGTCTATCTTATGCATCACAGC</span>
+   <span class="n">TCTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTG</span><span class="o">----</span><span class="n">TCCATCCATCCATCCATCCACCCATT</span>                                                                  
+    <span class="n">CTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTG</span><span class="o">----</span><span class="n">TCCATCCATCCATCCATCCACCCATTC</span>                                                                 
+    <span class="n">CTATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTG</span><span class="o">----</span><span class="n">TCCATCCATCCATCCATCCACCCATTC</span>                                                                 
+      <span class="n">ATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTG</span><span class="o">----</span><span class="n">TCCATCCATCCATCCATCCACCCATTCAT</span>                                                               
+      <span class="n">ATCTATCTCTTCTTCTGTCCGTTCATGTGTCTGTCCATCTATCTATCCATCTATCTATCATCTAACTATCTG</span><span class="o">----</span><span class="n">TCCATCCATCCATCCATCCACCCATTCAT</span>                                                               
+</pre></div>
+</div>
+</section>
+<section id="read-simultaneously-from-a-bam-cram-and-sam-file-and-send-to-stdout">
+<h3>Read simultaneously from a BAM, CRAM and SAM file and send to stdout<a class="headerlink" href="#read-simultaneously-from-a-bam-cram-and-sam-file-and-send-to-stdout" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">using</span> <span class="n">namespace</span> <span class="n">SeqLib</span><span class="p">;</span>
+<span class="c1">#include &quot;SeqLib/BamReader.h&quot;</span>
+<span class="n">BamReader</span> <span class="n">r</span><span class="p">;</span>
+  
+<span class="o">//</span> <span class="n">read</span> <span class="kn">from</span><span class="w"> </span><span class="nn">multiple</span> <span class="n">streams</span> <span class="n">coordinate</span><span class="o">-</span><span class="nb">sorted</span> <span class="n">order</span>
+<span class="n">r</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;test_data/small.bam&quot;</span><span class="p">);</span>
+<span class="n">r</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;test_data/small.cram&quot;</span><span class="p">);</span>
+<span class="n">r</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;test_data/small.sam&quot;</span><span class="p">);</span>
+
+<span class="n">BamWriter</span> <span class="n">w</span><span class="p">(</span><span class="n">SeqLib</span><span class="p">::</span><span class="n">SAM</span><span class="p">);</span> <span class="o">//</span> <span class="nb">set</span> <span class="n">uncompressed</span> <span class="n">output</span>
+<span class="n">w</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">);</span>              <span class="o">//</span> <span class="n">write</span> <span class="n">to</span> <span class="n">stdout</span>
+<span class="n">w</span><span class="o">.</span><span class="n">SetHeader</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">Header</span><span class="p">());</span>  <span class="o">//</span> <span class="n">specify</span> <span class="n">the</span> <span class="n">header</span>
+<span class="n">w</span><span class="o">.</span><span class="n">WriteHeader</span><span class="p">();</span>          <span class="o">//</span> <span class="n">write</span> <span class="n">out</span> <span class="n">the</span> <span class="n">header</span>
+
+<span class="n">BamRecord</span> <span class="n">rec</span><span class="p">;</span>
+<span class="k">while</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">GetNextRecord</span><span class="p">(</span><span class="n">rec</span><span class="p">))</span> 
+  <span class="n">w</span><span class="o">.</span><span class="n">WriteRecord</span><span class="p">(</span><span class="n">rec</span><span class="p">);</span>
+<span class="n">w</span><span class="o">.</span><span class="n">Close</span><span class="p">();</span>               <span class="o">//</span> <span class="n">Optional</span><span class="o">.</span> <span class="n">Will</span> <span class="n">close</span> <span class="n">on</span> <span class="n">destruction</span>
+</pre></div>
+</div>
+</section>
+<section id="perform-error-correction-on-reads-using-bfc">
+<h3>Perform error correction on reads, using <a class="reference external" href="https://github.com/lh3/bfc">BFC</a><a class="headerlink" href="#perform-error-correction-on-reads-using-bfc" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;SeqLib/BFC.h&quot;</span>
+<span class="n">using</span> <span class="n">namespace</span> <span class="n">SeqLib</span><span class="p">;</span>
+
+<span class="o">//</span> <span class="n">brv</span> <span class="ow">is</span> <span class="n">some</span> <span class="nb">set</span> <span class="n">of</span> <span class="n">reads</span> <span class="n">to</span> <span class="n">train</span> <span class="n">the</span> <span class="n">error</span> <span class="n">corrector</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">BamRecordVector</span><span class="p">::</span><span class="n">const_iterator</span> <span class="n">r</span> <span class="o">=</span> <span class="n">brv</span><span class="o">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">r</span> <span class="o">!=</span> <span class="n">brv</span><span class="o">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">AddSequence</span><span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">Sequence</span><span class="p">()</span><span class="o">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">r</span><span class="o">-&gt;</span><span class="n">Qualities</span><span class="p">()</span><span class="o">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">r</span><span class="o">-&gt;</span><span class="n">Qname</span><span class="p">()</span><span class="o">.</span><span class="n">c_str</span><span class="p">());</span>
+<span class="n">b</span><span class="o">.</span><span class="n">Train</span><span class="p">();</span>
+<span class="n">b</span><span class="o">.</span><span class="n">clear</span><span class="p">();</span> <span class="o">//</span> <span class="n">clear</span> <span class="n">the</span> <span class="n">training</span> <span class="n">sequences</span><span class="o">.</span> <span class="n">Training</span> <span class="n">parameters</span> <span class="n">saved</span> <span class="ow">in</span> <span class="n">BFC</span> <span class="nb">object</span>
+
+<span class="o">//</span> <span class="n">brv2</span> <span class="ow">is</span> <span class="n">some</span> <span class="nb">set</span> <span class="n">to</span> <span class="n">correct</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">BamRecordVector</span><span class="p">::</span><span class="n">const_iterator</span> <span class="n">r</span> <span class="o">=</span> <span class="n">brv2</span><span class="o">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">r</span> <span class="o">!=</span> <span class="n">brv2</span><span class="o">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">AddSequence</span><span class="p">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">Sequence</span><span class="p">()</span><span class="o">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">r</span><span class="o">-&gt;</span><span class="n">Qualities</span><span class="p">()</span><span class="o">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">r</span><span class="o">-&gt;</span><span class="n">Qname</span><span class="p">()</span><span class="o">.</span><span class="n">c_str</span><span class="p">());</span>
+<span class="n">b</span><span class="o">.</span><span class="n">ErrorCorrect</span><span class="p">();</span>
+
+<span class="o">//</span> <span class="n">retrieve</span> <span class="n">the</span> <span class="n">sequences</span>
+<span class="n">UnalignedSequenceVector</span> <span class="n">v</span><span class="p">;</span>
+<span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">name</span><span class="p">,</span> <span class="n">seq</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">GetSequences</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+  <span class="n">v</span><span class="o">.</span><span class="n">push_back</span><span class="p">({</span><span class="n">name</span><span class="p">,</span> <span class="n">seq</span><span class="p">});</span>      			   
+
+</pre></div>
+</div>
+</section>
+</section>
+<section id="support">
+<h2>Support<a class="headerlink" href="#support" title="Link to this heading"></a></h2>
+<p>This project is being actively developed and maintained by Jeremiah Wala (jwala&#64;broadinstitute.org).</p>
+</section>
+<section id="attributions">
+<h2>Attributions<a class="headerlink" href="#attributions" title="Link to this heading"></a></h2>
+<p>We would like to thank Heng Li (htslib/bwa/fermi), Erik Garrison (interval tree), Christopher Gilbert (aho corasick),
+and Mengyao Zhao (sw alignment), for providing open-source and robust bioinformatics solutions.</p>
+<p>Development, support, guidance, testing:</p>
+<ul class="simple">
+<li><p>Steve Huang - Research Scientist, Broad Institute</p></li>
+<li><p>Steve Schumacher - Computational Biologist, Dana Farber Cancer Institute</p></li>
+<li><p>Cheng-Zhong Zhang - Research Scientist, Broad Institute</p></li>
+<li><p>Marcin Imielinski - Assistant Professor, Cornell University</p></li>
+<li><p>Rameen Beroukhim - Assistant Professor, Harvard Medical School</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Yifan Fu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
