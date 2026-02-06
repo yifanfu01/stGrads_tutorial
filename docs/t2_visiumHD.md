@@ -290,5 +290,14 @@ PlotDisExpr(
 
 ```R
 sessionInfo()
+
+R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+other attached packages:
+[1] ggsci_4.1.0        stringr_1.6.0      ggpubr_0.6.2      
+[4] ggplot2_4.0.1      Seurat_5.3.1       SeuratObject_5.2.0
+[7] sp_2.2-0   
 ```
 
