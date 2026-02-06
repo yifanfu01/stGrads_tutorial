@@ -231,9 +231,9 @@ PlotDisProp(
 ```R
 sessionInfo()
 
-R version 4.3.3 (2024-02-29)
-Platform: x86_64-conda-linux-gnu (64-bit)
-Running under: CentOS Linux 7 (Core)
+R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
 
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
