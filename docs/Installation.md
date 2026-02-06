@@ -1,6 +1,6 @@
 # Installation
 
-`stGrads` is an R package for analyzing and visualizing spatial transcriptomics data (10x Visium / 10x HD / STO).  
+`stGrads` is an R package for analyzing and visualizing spatial transcriptomics data (10x Visium / 10x HD / STO and even user-defined multi-omics data).  
 This page shows how to install it and verify the setup.
 
 ---
