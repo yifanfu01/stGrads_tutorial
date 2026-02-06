@@ -135,9 +135,9 @@ PlotNearDis(
   shape            = 21,
   max.dis          = 6,
   image.alpha      = 0.5,
+  img.use = 'lowres',
   pt.size.factor   = 4e3
 )
-
 ```
 
 <img src="./_static/demo1_st1_p03.png" alt="img1" style="zoom:33%;" />
@@ -224,6 +224,43 @@ PlotDisProp(
 - **Model choice**: `'Linear'`, `'Log'`, and `'Exp'` encode different decay assumptions for strength—pick what best matches your biology.
 - **Reproducibility**: fix a random seed if you subselect spots for demos; re-run on full data for publication figures.
 
+## Advanced function
+
+We also accept user-defined decay function as input. Here is a simple demo for a self define decay function: $\mathrm{Decay}= e^{-d^2/10}$, where $d$ is distance. This can be applied by set `model ==‘diy’` and  pass the decay function (`my_gaussian_decay()` in the below sample) in `CalcNearDis()` function.
+
+```R
+# 1. Define your custom function
+my_gaussian_decay <- function(d) {
+  return(exp(-(d^2) / 10))
+}
+# 2. Call the main function
+df.res_diy <- CalcNearDis(
+  st1.t1,
+  celltype      = 'MDSC_spot',
+  pheno_choose  = NULL,       # NOT RECOMMENDED now
+  calc.strength = TRUE,
+  model         = 'diy',  
+  max.r         = 10,          
+  self_decay = my_gaussian_decay
+)
+
+PlotNearDis(
+  st1.t1,
+  nearest_ref_info = df.res_diy,
+  color            = c('darkred','gray'),
+  shape            = 21,
+  max.dis          = 6,
+  image.alpha      = 0.5,
+  img.use = 'lowres',
+  pt.size.factor   = 4e3
+)
+##note: if necessary, the title of panel should be modified according to user's input function.
+```
+
+<img src="./_static/demo1_st1_p08.png" alt="img1" style="zoom:20%;" />
+
+
+
 ------
 
 ## Session info
@@ -239,6 +276,6 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggpubr_0.6.0       ggplot2_3.5.1      stringr_1.5.1      Seurat_5.3.0      
-[5] SeuratObject_5.2.0 sp_2.1-4           stGrads_0.1.1     
+[1] stringr_1.6.0      ggpubr_0.6.2       ggplot2_4.0.1     
+[4] Seurat_5.3.1       SeuratObject_5.2.0 sp_2.2-0   
 ```
