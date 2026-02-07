@@ -9,12 +9,15 @@
 project = 'stGrads'
 copyright = '2025, Yifan Fu'
 author = 'Yifan Fu'
-release = '0.1'
+release = '0.1.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["myst_parser"]
+extensions = [
+    "myst_parser",
+    "sphinx.ext.mathjax",
+]
 
 source_suffix = {
 	'.rst': 'restructuredtext',
@@ -31,3 +34,5 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+myst_enable_extensions = ["dollarmath", "amsmath"]
+
