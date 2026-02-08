@@ -242,6 +242,37 @@ PlotDRGs(DRGs)
 
 <img src="./_static/demo1_st2_p05.png" alt="img1" style="zoom:25%;" />
 
+
+
+
+
+(Optimical) The DRGs could be applied into downstream geneset enrichment, such as GO and KEGG, with enrichment packages.
+
+```R
+DRGs_sig <- DRGs[DRGs$rho<-0.25 & DRGs$pvalue<0.01,]
+genes <- rownames(DRGs_sig)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(enrichplot)
+gene_convert <- bitr(genes, 
+                     fromType = "SYMBOL", 
+                     toType = "ENTREZID", 
+                     OrgDb = org.Hs.eg.db)
+go_res <- enrichGO(gene          = gene_convert$ENTREZID,
+                   OrgDb         = org.Hs.eg.db,
+                   ont           = "BP", 
+                   pAdjustMethod = "BH",
+                   pvalueCutoff  = 0.1,
+                   readable      = TRUE) 
+go_res_df <- go_res@result
+go_res_df <- go_res_df[go_res_df$p.adjust<0.1,]
+dotplot(go_res, showCategory = 10)
+```
+
+
+
+<img src="./_static/demo1_st2_p07.png" alt="img1" style="zoom:25%;" />
+
 ```R
 # ---- Distance vs expression: example genes ----
 
