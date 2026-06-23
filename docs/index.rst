@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 stGrads Tutorial Documentation
-====================
+==============================
 
 .. toctree::
    :maxdepth: 2
@@ -13,3 +13,4 @@ stGrads Tutorial Documentation
    Installation.md
    t1_visium.md
    t2_visiumHD
+   t3_visiumHD_morphology_doublets.md
