@@ -1,9 +1,9 @@
 # Installation
 
-`stGrads` 0.2 supports spatial gradients, Visium HD pathology morphology,
+`stGrads` 2.0 supports spatial gradients, Visium HD pathology morphology,
 RCTD doublet support, and morphology-transcriptome integration.
 
-`stGrads` 0.2 支持空间梯度、Visium HD 病理形态、RCTD doublet 空间支持和
+`stGrads` 2.0 支持空间梯度、Visium HD 病理形态、RCTD doublet 空间支持和
 形态—转录联合分析。
 
 This page shows how to install it and verify the setup.
@@ -39,8 +39,8 @@ library(stGrads)
 
 # 4) Quick check:
 packageVersion("stGrads")
-# Expected: 0.2.0 or newer
-# 预期版本：0.2.0 或更高
+# Expected: 2.0.0 or newer
+# 预期版本：2.0.0 或更高
 ```
 
 > Tip: To update later, just run the same `install_github()` command again.

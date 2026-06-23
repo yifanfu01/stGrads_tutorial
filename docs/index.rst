@@ -1,5 +1,5 @@
 .. stGrads documentation master file, created by
-   sphinx-quickstart on Thu Sep  4 23:24:46 2025.
+   sphinx-quickstart; documentation revised on 2026-06-23.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -14,3 +14,4 @@ stGrads Tutorial Documentation
    t1_visium.md
    t2_visiumHD
    t3_visiumHD_morphology_doublets.md
+   t4_pair_enrichment_mathematics.md

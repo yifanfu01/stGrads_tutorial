@@ -7,9 +7,10 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'stGrads'
-copyright = '2025, Yifan Fu'
+copyright = '2026, Yifan Fu'
 author = 'Yifan Fu'
-release = '0.2.0'
+version = '2.0'
+release = '2.0.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -35,3 +36,4 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 myst_enable_extensions = ["dollarmath", "amsmath"]
+html_last_updated_fmt = '%Y-%m-%d'

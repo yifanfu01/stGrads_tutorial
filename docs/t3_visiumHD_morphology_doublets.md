@@ -2,11 +2,11 @@
 
 # Visium HD 形态学与 RCTD Doublet 增强
 
-This tutorial introduces the pathology-aware workflow added in stGrads 0.2.
+This tutorial introduces the pathology-aware workflow added in stGrads 2.0.
 It extends the original distance–strength–expression framework from the
 stGrads article to segmented Visium HD cells.
 
-本教程介绍 stGrads 0.2 新增的病理感知分析流程，将原 stGrads 文章中的
+本教程介绍 stGrads 2.0 新增的病理感知分析流程，将原 stGrads 文章中的
 “距离—强度—表达”框架扩展至分割后的 Visium HD 细胞。
 
 The complete workflow is:
@@ -22,9 +22,9 @@ The complete workflow is:
 
 ---
 
-## 1. Install and load stGrads 0.2
+## 1. Install and load stGrads 2.0
 
-## 1. 安装并载入 stGrads 0.2
+## 1. 安装并载入 stGrads 2.0
 
 ```r
 remotes::install_github("yifanfu01/stGrads")
@@ -363,45 +363,96 @@ automatically modify polygon geometry.
 enrichment <- stg_pair_enrichment(
   refined,
   sample_col = "sample",
-  condition_col = "condition"
+  condition_col = "condition",
+  min_singlet_cells = 100,
+  min_expected = 5,
+  min_expected_fraction = 1e-4
 )
 
 head(
-  enrichment$condition[
-    order(enrichment$condition$log2_oe, decreasing = TRUE),
-  ]
+  enrichment$condition[, c(
+    "doublet_pair", "observed", "expected",
+    "min_expected_required", "estimable",
+    "oe_raw", "log2_oe"
+  )]
 )
 ```
 
-For an undirected heterotypic pair:
+For ROI \(r\), let \(S_{ir}\) denote the type-\(i\) singlet count and
+\(p_{ir}=S_{ir}/\sum_kS_{kr}\). For an undirected heterotypic pair \(i<j\):
 
-对于无方向的异型 pair：
+对 ROI \(r\)，令 \(S_{ir}\) 为类型 \(i\) 的 singlet 数，
+\(p_{ir}=S_{ir}/\sum_kS_{kr}\)。对于无方向异型 pair \(i<j\)：
 
 $$
-P(A,B\mid A\ne B)
+q_{ijr}
+=P(\{i,j\}\mid X\ne Y)
 =
-\frac{2p_Ap_B}{1-\sum_i p_i^2}.
+\frac{2p_{ir}p_{jr}}{1-\sum_kp_{kr}^2},
+\qquad
+E_{ijr}=D_rq_{ijr}.
 $$
 
+Here \(D_r\) is the total number of certain heterotypic doublets in ROI
+\(r\). The denominator is calculated using **all** singlet types before
+applying the pair-specific abundance filter.
+
+其中 \(D_r\) 为 ROI \(r\) 中确定异型 doublet 的总数。分母使用过滤前的
+**全部** singlet 类型计算。
+
+An ROI contributes only when \(S_{ir}\ge100\) and \(S_{jr}\ge100\). Across
+the eligible ROI set \(\mathcal R_{ijc}\) in condition \(c\):
+
+仅当 \(S_{ir}\ge100\) 且 \(S_{jr}\ge100\) 时，该 ROI 才纳入计算。对疾病组
+\(c\) 的合格 ROI 集合 \(\mathcal R_{ijc}\)：
+
 $$
-\mathrm{Enrichment}_{AB}
-=
-\log_2\left(
-\frac{O_{AB}+0.5}{E_{AB}+0.5}
-\right).
+O_{ijc}=\sum_{r\in\mathcal R_{ijc}}O_{ijr},\qquad
+E_{ijc}=\sum_{r\in\mathcal R_{ijc}}E_{ijr},\qquad
+N_{ijc}=\sum_{r\in\mathcal R_{ijc}}D_r.
 $$
 
-The conditioning avoids a systematic upward enrichment bias when the RCTD
-output contains only heterotypic doublets.
+The estimate is retained only when
 
-当 RCTD 输出仅包含异型 doublet 时，该条件化可避免系统性的富集上偏。
+仅当下式成立时保留估计：
+
+$$
+E_{ijc}\ge
+E_{\min,ijc}
+=\max\left(5,\;10^{-4}N_{ijc}\right).
+$$
+
+The primary effect size contains no pseudocount:
+
+主效应量不添加 pseudocount：
+
+$$
+R_{O/E,ijc}=\frac{O_{ijc}}{E_{ijc}},\qquad
+L_{ijc}=\log_2R_{O/E,ijc}.
+$$
+
+If \(O=0\), the exact \(L\) is \(-\infty\). Only the heatmap display uses
+\(\log_2(0.5/E)\); the tile is labelled “Zero observed”. Non-estimable cells
+are not drawn and therefore remain blank.
+
+当 \(O=0\) 时，精确的 \(L=-\infty\)。仅热图显示采用
+\(\log_2(0.5/E)\)，并标记“Zero observed”；不可估计位置不绘制 tile，
+因此保持空白。
 
 ```r
 stg_plot_pair_triangle(
   enrichment$condition,
+  value_col = "log2_oe",
   show_counts = TRUE
 )
 ```
+
+The complete derivation, assumptions, reporting language, and output-column
+definitions are provided in the dedicated mathematical note.
+
+完整推导、假设、论文报告措辞及输出字段定义见专门的数学说明页。
+
+{doc}`t4_pair_enrichment_mathematics`
 
 ---
 
@@ -484,4 +535,3 @@ Direct contact requires image-level validation, multi-nucleus detection,
 membrane segmentation, or orthogonal staining.
 
 直接接触仍需图像层验证、多细胞核检测、细胞膜分割或正交染色。
-
