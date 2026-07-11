@@ -1,0 +1,2 @@
+condition,doublet_pair,type_a,type_b,n_roi_eligible,min_singlet_a,min_singlet_b,n_total_doublet_eligible,observed,expected,min_expected_required,estimable,exclusion_reason,zero_observed,oe_raw,log2_oe_raw,log2_oe_display,oe,log2_oe,oe_sensitivity,log2_oe_sensitivity
+PASC,Duct2__Fibroblast,Duct2,Fibroblast,1,241,312,121,96,117.536068623398,5,TRUE,included,FALSE,0.816770554982551,-0.291997237665723,-0.291997237665723,0.816770554982551,-0.291997237665723,0.817546713690454,-0.290626927965785

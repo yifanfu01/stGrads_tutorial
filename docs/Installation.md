@@ -1,14 +1,11 @@
 # Installation
 
 `stGrads` 2.0 supports spatial gradients, Visium HD pathology morphology,
-RCTD doublet support, and morphology-transcriptome integration.
+RCTD mixed-unit support, and morphology–transcriptome integration.
 
-`stGrads` 2.0 支持空间梯度、Visium HD 病理形态、RCTD doublet 空间支持和
-形态—转录联合分析。
 
 This page shows how to install it and verify the setup.
 
-本页面介绍安装与环境验证。
 
 ---
 
@@ -16,7 +13,8 @@ This page shows how to install it and verify the setup.
 
 - **R**: 4.1 or newer is recommended  
 - **OS**: macOS / Linux / Windows  
-- **(Optional) R packages for tutorials**: `Seurat (v5+)`, `ggplot2`, `patchwork`, `data.table`
+- **Optional tutorial packages**: `Seurat (v5+)`, `ggplot2`, `patchwork`,
+  `data.table`, and `jpeg`
 
 > If you install from source on Windows/macOS, you may need basic build tools:
 > - **Windows**: Rtools (matching your R version)
@@ -40,7 +38,6 @@ library(stGrads)
 # 4) Quick check:
 packageVersion("stGrads")
 # Expected: 2.0.0 or newer
-# 预期版本：2.0.0 或更高
 ```
 
 > Tip: To update later, just run the same `install_github()` command again.

@@ -1,30 +1,22 @@
-# Visium HD Morphology and RCTD Doublet Refinement
+# Visium HD Morphometry and Mixed-Unit Refinement
 
-# Visium HD 形态学与 RCTD Doublet 增强
+This tutorial presents the pathology-aware workflow introduced in stGrads 2.0.
+It follows the same **goal → key arguments → runnable code → figure →
+interpretation** structure used by the original stGrads tutorials.
 
-This tutorial introduces the pathology-aware workflow added in stGrads 2.0.
-It extends the original distance–strength–expression framework from the
-stGrads article to segmented Visium HD cells.
+The analysis connects six evidence layers:
 
-本教程介绍 stGrads 2.0 新增的病理感知分析流程，将原 stGrads 文章中的
-“距离—强度—表达”框架扩展至分割后的 Visium HD 细胞。
+> segmented Visium HD cells → cell and nuclear morphometry → RCTD mixed-unit
+> annotation → local spatial support → dual marker programs →
+> composite-segment prioritization.
 
-The complete workflow is:
-
-完整流程为：
-
-> Visium HD → cell/nucleus segmentation → pathology morphology → RCTD
-> singlets and doublets → local spatial support → marker overlap →
-> evidence-based composite-segment refinement.
-
-> Visium HD → 细胞/细胞核分割 → 病理形态 → RCTD singlet 与 doublet →
-> 局部空间支持 → marker 重叠 → 基于多证据的复合分割单元增强。
+The terminology is deliberate. An **RCTD mixed unit** contains evidence for two cell types, whereas a **spatially supported mixed unit** additionally has nearby singlets matching both constituent types. Neither term alone proves direct membrane contact.
 
 ---
 
 ## 1. Install and load stGrads 2.0
 
-## 1. 安装并载入 stGrads 2.0
+**Goal:** load the package and the plotting dependencies used in this tutorial.
 
 ```r
 remotes::install_github("yifanfu01/stGrads")
@@ -32,412 +24,456 @@ remotes::install_github("yifanfu01/stGrads")
 library(stGrads)
 library(ggplot2)
 library(patchwork)
+library(Matrix)
 ```
 
-For local development:
-
-本地开发版本：
+For a local source checkout:
 
 ```r
-remotes::install_local("/Users/yifanfu/LabCode_2026/stGrads2")
+remotes::install_local("/PATH/TO/stGrads2")
 ```
 
 ---
 
-## 2. Load the package demo
+## 2. Load the publication-ready demo
 
-## 2. 读取 package demo
-
-The package contains an anonymized crop of 694 Visium HD spatial units and
-19 marker genes. It does not contain a tissue image, patient identifier, or
-full transcriptome.
-
-package 内置一个匿名化裁剪数据，包含 694 个 Visium HD 空间单元和 19 个 marker
-基因，不包含组织图像、患者标识或完整转录组。
+**Goal:** load a compact, real segmented Visium HD region that can regenerate the tutorial figures without shipping a whole-slide object.
 
 ```r
-data("stgrads_hd_demo")
+data("stgrads_hd_pc1_a2_roi_demo")
+demo <- stgrads_hd_pc1_a2_roi_demo
 
-metadata <- stgrads_hd_demo$metadata
-counts <- stgrads_hd_demo$counts
-log_expression <- stgrads_hd_demo$log_expression
+dim(demo$counts)
+# 18085 genes x 678 segmented cells
 
-dim(metadata)
-table(metadata$spot_class)
+dim(demo$polygons)
+# 10864 polygon vertices x 4 columns
+
+table(demo$metadata$duct2_fib_status)
 ```
+
+The demo contains only the selected region selected, for the whole slide data, please refer the original manuscript :
+
+- complete sparse counts from the `Spatial.Polygons` assay;
+- 678 cell centroids and segmentation polygons;
+- a cropped H&E image;
+- RCTD singlet and mixed-unit labels;
+- cell and nuclear morphology;
+- pre-crop spatial-support results for mixed units.
+
+*The compressed package object is approximately 0.57 MB.
+
+```r
+metadata <- demo$metadata
+polygons <- demo$polygons
+
+image_path <- stg_demo_image_path(demo)
+
+p_he <- stg_plot_hd_he(demo) +
+  geom_polygon(
+    data = polygons,
+    aes(x, y, group = CellID),
+    fill = NA,
+    color = "white",
+    linewidth = 0.12
+  )
+
+p_he
+```
+
+```{image} ./_static/stgrads2_final/stgrads2_tutorial_01_workflow_demo.jpg
+:alt: stGrads 2.0 workflow, cropped H&E, segmentation polygons, and RCTD labels
+:width: 100%
+```
+
+**Result:** the ROI contains a Duct2-rich epithelial region adjacent to a fibroblast-rich stromal region. Duct2–Fibroblast mixed units concentrate near their interface, making this crop useful for demonstrating spatial support and segmentation refinement.
 
 ---
 
-## 3. Upgrade a previously saved RDS object
+## 3. Keep image coordinates and analytical coordinates separate
 
-## 3. 升级既往保存的 RDS 对象
+The demo intentionally stores two coordinate systems.
 
-The compatibility layer supports Seurat v4/v5 objects, legacy Visium image
-coordinates, VisiumV2 centroid boundaries, metadata coordinates, and both
-slot- and layer-based assay access.
-
-兼容层支持 Seurat v4/v5 对象、旧版 Visium image 坐标、VisiumV2 centroid
-boundary、metadata 坐标以及 slot/layer 两种 assay 读取方式。
-
-```r
-old_object <- readRDS("previous_stGrads_or_Visium_HD_object.rds")
-
-# The operation adds standardized fields but does not remove existing content.
-# 该操作只增加标准化字段，不会删除原有内容。
-old_object <- stg_upgrade_object(old_object)
-
-head(old_object[[]][, c("stg_x", "stg_y")])
-```
-
-If the old object already contains micron-scale morphology coordinates:
-
-如果旧对象已经包含微米尺度的形态学质心坐标：
-
-```r
-old_object <- stg_upgrade_object(
-  old_object,
-  coordinate_scale = "micron"
-)
-```
-
----
-
-## 4. Calculate cell and nuclear morphology
-
-## 4. 计算细胞与细胞核形态
-
-For a Space Ranger `outs/` directory:
-
-对于 Space Ranger `outs/` 目录：
-
-```r
-morphology <- stg_prepare_hd_morphology(
-  outs_dir = "/path/to/spaceranger/outs",
-  chip = "PC1",
-  run_qc = TRUE
-)
-
-head(
-  morphology[, c(
-    "area_um2_cell",
-    "area_um2_nuc",
-    "nucleus_fraction",
-    "nc_ratio",
-    "nucleus_centroid_displacement_norm",
-    "morph_qc_pass"
-  )]
-)
-```
-
-The main morphology fields include:
-
-主要形态字段包括：
-
-| Field | English definition | 中文含义 |
+| Purpose | Columns | Unit |
 |---|---|---|
-| `area_um2_cell` | segmented cell area | 细胞分割面积 |
-| `area_um2_nuc` | nuclear area | 细胞核面积 |
-| `nucleus_fraction` | nuclear area / cell area | 核面积占细胞面积比例 |
-| `nc_ratio` | nucleus-to-cytoplasm area ratio | 核质面积比 |
-| `circularity_cell` | cell circularity | 细胞圆形度 |
-| `solidity_cell` | cell solidity | 细胞实度 |
-| `boundary_complexity_cell` | perimeter relative to equal-area circle | 相对于等面积圆的边界复杂度 |
-| `nucleus_centroid_displacement_norm` | normalized nuclear displacement | 标准化核—细胞质心偏移 |
+| Polygon and H&E plotting | `x`, `y` in `demo$metadata` and `demo$polygons` | full-resolution pixels |
+| Distance-based analysis | `centroid_x_um_cell`, `centroid_y_um_cell` | micrometres |
 
-Attach the table without rebuilding the Seurat object:
+Use full-resolution pixels to align polygons with H&E. Use micrometre
+coordinates for support radii, nearest-neighbour distances, and spatial
+gradients. Mixing these systems silently changes the biological radius.
 
-无需重建 Seurat 对象即可合并形态表：
+For a previously saved Seurat object, the compatibility layer adds standardized coordinates without removing assays, images, reductions, or metadata:
 
 ```r
-old_object <- stg_add_morphology(old_object, morphology)
+object <- readRDS("previous_spatial_object.rds")
+object <- stg_upgrade_object(object)
 ```
 
 ---
 
-## 5. Standardize RCTD doublets
+## 4. Standardize undirected RCTD pairs
 
-## 5. 标准化 RCTD doublet
+**Goal:** convert `first_type` and `second_type` into one stable, undirected
+pair label.
 
 ```r
 metadata <- stg_annotate_rctd(metadata)
 
-table(metadata$doublet_pair, useNA = "ifany")
-```
-
-The pair is canonical and undirected:
-
-pair 经过规范化且无方向：
-
-```r
 stg_canonical_pair(
   c("Duct2", "Fibroblast"),
   c("Fibroblast", "Duct2")
 )
-
-# Both values are "Duct2__Fibroblast".
-# 两个结果均为 "Duct2__Fibroblast"。
+# Both entries are "Duct2__Fibroblast".
 ```
+
+Mathematically, the pair is a set rather than an ordered tuple:
+
+```{math}
+\{i,j\}=\{j,i\}.
+```
+
+This convention prevents the same biological pair from appearing twice in
+summaries or triangular heatmaps.
 
 ---
 
-## 6. Test local spatial support
+## 5. Evaluate local spatial support
 
-## 6. 检验局部空间支持
+**Goal:** require both constituent cell types of an RCTD mixed unit to be
+represented by nearby singlets.
+
+For mixed unit $u$ with constituent types $a_u$ and $b_u$, define
+
+```{math}
+d_a(u)=\min_{s:\,T_s=a_u}\lVert \mathbf{x}_u-\mathbf{x}_s\rVert_2,
+\qquad
+d_b(u)=\min_{s:\,T_s=b_u}\lVert \mathbf{x}_u-\mathbf{x}_s\rVert_2.
+```
+
+With radius $r_0=30\,\mu\mathrm{m}$, the support indicator is
+
+```{math}
+I_{\mathrm{support}}(u)
+=\mathbb{1}\{d_a(u)\le r_0\}
+\mathbb{1}\{d_b(u)\le r_0\}.
+```
+
+For an uncropped sample, calculate support as follows:
 
 ```r
 support <- stg_doublet_spatial_support(
   metadata = metadata,
   coordinates = metadata,
   radius = 30,
-  sample_col = "sample",
+  sample_col = "MatchKey",
   cell_id_col = "CellID",
   x_col = "centroid_x_um_cell",
   y_col = "centroid_y_um_cell",
   coordinate_cell_col = "CellID"
 )
+```
 
-table(support$contact_evidence)
+The package demo provides `demo$spatial_support`, calculated before the ROI was cropped. This preserves valid neighbours immediately outside the displayed region and avoids crop-edge bias:
+
+```r
+support <- demo$spatial_support
 
 metadata <- stg_add_spatial_support(
   metadata,
   support,
   cell_id_col = "CellID"
 )
-```
 
-A supported doublet has nearby singlets matching both `first_type` and
-`second_type` within 30 μm.
-
-支持性 doublet 要求在 30 μm 内分别存在匹配 `first_type` 和 `second_type` 的
-singlet。
-
-This is local spatial evidence, not direct proof of membrane contact.
-
-这是局部空间证据，并非细胞膜直接接触的证明。
-
----
-
-## 7. Display Duct2, fibroblasts, and mixed units
-
-## 7. 展示 Duct2、成纤维细胞与混合单元
-
-```r
-metadata <- stg_classify_pair_display(
-  metadata,
-  pair = "Duct2__Fibroblast",
-  support_col = "contact_evidence"
+target_support <- subset(
+  support,
+  doublet_pair == "Duct2__Fibroblast"
 )
 
-p_pair <- stg_plot_doublet_map(
-  metadata,
-  x_col = "stg_x",
-  y_col = "stg_y",
-  point_size = 0.8
-) +
-  labs(
-    title = "Duct2-Fibroblast mixed units",
-    subtitle = "Red: spatially supported RCTD doublets"
-  )
-
-p_pair
+table(target_support$both_types_supported)
+# FALSE  TRUE
+#     6    90
 ```
+
+```{image} ./_static/stgrads2_final/stgrads2_tutorial_02_spatial_support.jpg
+:alt: Spatial support classification, constituent distances, spatial map, and supported counts
+:width: 100%
+```
+
+**Result:** 90 of 96 Duct2–Fibroblast mixed units have both constituent singlet
+types within 30 µm in the pre-crop spatial context. This supports local
+compatibility; it does not establish membrane contact.
 
 ---
 
-## 8. Calculate Duct2 and fibroblast marker programs
+## 6. Replace single markers with deterministic marker programs
 
-## 8. 计算 Duct2 与成纤维细胞 marker program
+**Goal:** identify units containing concordant epithelial and fibroblast
+transcriptional signals while reducing sensitivity to single-gene dropout.
 
-Single genes are intuitive but sensitive to dropout. Marker programs are
-recommended for the main figure.
+First normalize the complete polygon count matrix:
 
-单基因容易理解但受 dropout 影响较大，主图推荐使用 marker program。
+```r
+log_expression <- stg_normalize_counts(
+  demo$counts,
+  scale_factor = 1e4
+)
+```
+
+For marker set $G_m$, stGrads standardizes each gene across cells and averages
+the available markers:
+
+```{math}
+P_m(u)=\frac{1}{|G_m|}\sum_{g\in G_m}
+\frac{X_{gu}-\bar X_g}{s_g}.
+```
+
+The implementation is deterministic and does not randomly sample control
+genes:
 
 ```r
 programs <- stg_marker_programs(
   log_expression,
   gene_sets = list(
-    Duct2 = stgrads_hd_demo$duct2_markers,
-    Fibroblast = stgrads_hd_demo$fibroblast_markers
+    Duct2 = demo$duct2_markers,
+    Fibroblast = demo$fibroblast_markers
   )
 )
 
 metadata$Duct2_program <- programs[metadata$CellID, "Duct2"]
 metadata$Fibroblast_program <- programs[metadata$CellID, "Fibroblast"]
+```
 
+Each program is independently rescaled to $[0,1]$. The default joint signal
+uses the fuzzy-set intersection:
+
+```{math}
+J(u)=\min\{\widetilde P_{\mathrm{Duct2}}(u),
+\widetilde P_{\mathrm{Fibroblast}}(u)\}.
+```
+
+Therefore, one high program cannot compensate for an absent second program.
+
+```r
 metadata$program_overlap <- stg_program_overlap(
   metadata$Duct2_program,
   metadata$Fibroblast_program,
   method = "minimum"
 )
-```
 
-The minimum-based overlap is high only when both programs are high.
-
-基于最小值的重叠评分仅在两个 program 均高时升高。
-
-```r
-p_duct2 <- stg_plot_spatial_feature(
+stg_plot_polygon_feature(
   metadata,
-  feature = "Duct2_program",
-  x_col = "stg_x",
-  y_col = "stg_y"
-) +
-  labs(title = "Duct2 marker program")
-
-p_fibroblast <- stg_plot_spatial_feature(
-  metadata,
-  feature = "Fibroblast_program",
-  x_col = "stg_x",
-  y_col = "stg_y",
-  low = "#F7FCF5",
-  mid = "#74C476",
-  high = "#00441B"
-) +
-  labs(title = "Fibroblast marker program")
-
-p_overlap <- stg_plot_spatial_feature(
-  metadata,
+  polygons,
   feature = "program_overlap",
-  x_col = "stg_x",
-  y_col = "stg_y",
-  low = "#F7F7F7",
-  mid = "#FDBB84",
-  high = "#7F0000"
-) +
-  labs(title = "Joint Duct2-Fibroblast signal")
-
-p_duct2 | p_fibroblast | p_overlap
+  colors = c("#FFF7EC", "#FDD49E", "#FC8D59", "#D7301F", "#7F0000"),
+  limits = c(0, 1)
+)
 ```
+
+```{image} ./_static/stgrads2_final/stgrads2_tutorial_03_marker_programs.jpg
+:alt: KRT19, COL1A1, Duct2 program, fibroblast program, and joint signal
+:width: 100%
+```
+
+**Result:** KRT19 and COL1A1 provide an intuitive single-gene view, whereas
+the program scores provide the more stable evidence layer used for refinement.
+The joint score highlights a subset of cells near the epithelial–stromal
+interface.
 
 ---
 
-## 9. Integrate evidence for segmentation refinement
+## 7. Combine cell and nuclear morphology
 
-## 9. 整合证据进行分割增强
+**Goal:** distinguish cell enlargement from nuclear enlargement and avoid
+interpreting cell area alone as evidence of a composite segment.
+
+The most useful paired quantities are
+
+```{math}
+A_{\mathrm{cell}},\qquad
+A_{\mathrm{nuc}},\qquad
+f_{\mathrm{nuc}}=\frac{A_{\mathrm{nuc}}}{A_{\mathrm{cell}}},
+\qquad
+R_{N:C}=\frac{A_{\mathrm{nuc}}}
+{A_{\mathrm{cell}}-A_{\mathrm{nuc}}}.
+```
+
+```r
+morphology_fields <- metadata[, c(
+  "CellID",
+  "area_um2_cell",
+  "area_um2_nuc",
+  "nucleus_fraction",
+  "nc_ratio",
+  "circularity_cell",
+  "boundary_complexity_cell",
+  "nucleus_centroid_displacement_norm"
+)]
+
+summary(morphology_fields[, -1])
+```
+
+```{image} ./_static/stgrads2_final/stgrads2_tutorial_04_cell_nuclear_morphology.jpg
+:alt: Cell area, nuclear area, nuclear fraction, and their joint relationship
+:width: 100%
+```
+
+
+
+**Result:** supported Duct2–Fibroblast mixed units show a shifted distribution
+of cell and nuclear measurements relative to the two singlet populations.
+The two-dimensional cell-area/nuclear-area view is more informative than a
+single size feature.
+
+These distributions are descriptive. Cells within one ROI are not independent biological replicates, so the tutorial reports counts, medians, and interquartile ranges rather than cell-level inferential P values. Cohort-level testing should use ROI or patient as the replication unit.
+
+---
+
+## 8. Integrate evidence for composite-segment prioritization
+
+**Goal:** rank RCTD mixed units for image review or nucleus-aware
+re-segmentation.
 
 ```r
 refined <- stg_refine_doublets(
   metadata,
   support_col = "both_types_supported",
   overlap_col = "program_overlap",
-  sample_col = "sample"
+  sample_col = "MatchKey"
 )
 
-table(
-  refined$stg_refinement_class,
-  useNA = "ifany"
-)
+table(refined$stg_refinement_class, useNA = "ifany")
 ```
 
-The score integrates:
+Each continuous evidence component is robustly standardized within sample and
+mapped to $[0,1]$. For unit $u$, the integrated score is
+```{math}
+C(u)=
+\frac{\sum_{k\in\mathcal A_u}w_k e_k(u)}
+{\sum_{k\in\mathcal A_u}w_k},
+```
 
-评分整合以下证据：
+where $\mathcal{A}_u$ is the set of available evidence components. The default
+weights are:
 
-- spatial support;
-- cell area;
-- nuclear area;
-- UMI count;
-- detected genes;
-- dual marker-program overlap.
+| Evidence | Weight |
+|---|---:|
+| spatial support | 2.0 |
+| cell area | 1.0 |
+| nuclear area | 0.5 |
+| transcript count | 1.0 |
+| detected genes | 1.0 |
+| dual marker-program overlap | 2.0 |
 
-- 空间支持；
-- 细胞面积；
-- 细胞核面积；
-- UMI 数；
-- 检测基因数；
-- 双 marker program 重叠。
+Default classes are low evidence $C<0.45$, moderate evidence
+$0.45\le C<0.70$, and high confidence $C\ge0.70$.
 
-The function prioritizes candidate composite segments but does not
-automatically modify polygon geometry.
+```{image} ./_static/stgrads2_final/stgrads2_tutorial_05_refinement.jpg
+:alt: Composite-segment scores, refinement classes, and component evidence heatmap
+:width: 100%
+```
 
-该函数用于筛选候选复合分割单元，但不会自动修改 polygon 几何边界。
+**Result:** spatial support and dual marker evidence move many interface mixed units into the moderate- or high-confidence categories. The function ranks candidates but does not alter polygon geometry automatically.
 
 ---
 
-## 10. Calculate conditional observed-to-expected enrichment
+## 9. Extend the original stGrads gradient framework to morphology
 
-## 10. 计算条件化观察/期望富集
+**Goal:** test whether fibroblast morphology or transcriptional programs vary
+with distance from Duct2 singlets.
 
 ```r
+gradient <- stg_spatial_gradient(
+  object = metadata,
+  label_col = "first_type",
+  reference = "Duct2",
+  query = "Fibroblast",
+  sample_col = "MatchKey",
+  x_col = "centroid_x_um_cell",
+  y_col = "centroid_y_um_cell",
+  cell_id_col = "CellID",
+  max_distance = 150,
+  decay = "exponential"
+)
+
+head(gradient)
+```
+
+For query cell $u$, the nearest-reference distance is
+
+```{math}
+d(u)=\min_{r\in\mathcal R}\lVert\mathbf{x}_u-\mathbf{x}_r\rVert_2,
+```
+
+and the exponential cumulative strength within radius $d_{\max}$ is
+
+```{math}
+S(u)=\sum_{r\in\mathcal R}
+\exp[-d(u,r)]\,\mathbb{1}\{d(u,r)\le d_{\max}\}.
+```
+
+```{image} ./_static/stgrads2_final/stgrads2_tutorial_06_spatial_gradient.jpg
+:alt: Fibroblast distance from Duct2 singlets and morphology-transcriptome gradients
+:width: 100%
+```
+
+**Result:** the demo illustrates how previous stGrads v1.0 function used in new version package, that is, spatial distance, cell morphology, and a
+fibroblast transcriptional program can be displayed in one coherent analysis.
+
+---
+
+## 10. Calculate undirected observed-to-expected pair enrichment
+
+**Goal:** compare the observed number of each mixed-unit pair with the number
+expected from local singlet composition.
+
+```r
+##DO NOT RUN
+
 enrichment <- stg_pair_enrichment(
-  refined,
-  sample_col = "sample",
-  condition_col = "condition",
+  metadata,
+  sample_col = "MatchKey",
+  condition_col = "Condition",
   min_singlet_cells = 100,
   min_expected = 5,
   min_expected_fraction = 1e-4
 )
 
-head(
-  enrichment$condition[, c(
-    "doublet_pair", "observed", "expected",
-    "min_expected_required", "estimable",
-    "oe_raw", "log2_oe"
-  )]
-)
+enrichment$condition[, c(
+  "doublet_pair",
+  "observed",
+  "expected",
+  "oe_raw",
+  "log2_oe",
+  "estimable"
+)]
 ```
 
-For ROI \(r\), let \(S_{ir}\) denote the type-\(i\) singlet count and
-\(p_{ir}=S_{ir}/\sum_kS_{kr}\). For an undirected heterotypic pair \(i<j\):
+For ROI $r$, let $S_{ir}$ be the type-(i) singlet count and
+$p_{ir}=S_{ir}/\sum_k S_{kr}$. For an undirected heterotypic pair $i<j$,
 
-对 ROI \(r\)，令 \(S_{ir}\) 为类型 \(i\) 的 singlet 数，
-\(p_{ir}=S_{ir}/\sum_kS_{kr}\)。对于无方向异型 pair \(i<j\)：
-
-$$
+```{math}
 q_{ijr}
 =P(\{i,j\}\mid X\ne Y)
-=
-\frac{2p_{ir}p_{jr}}{1-\sum_kp_{kr}^2},
+=\frac{2p_{ir}p_{jr}}{1-\sum_kp_{kr}^2},
 \qquad
 E_{ijr}=D_rq_{ijr}.
-$$
+```
 
-Here \(D_r\) is the total number of certain heterotypic doublets in ROI
-\(r\). The denominator is calculated using **all** singlet types before
-applying the pair-specific abundance filter.
-
-其中 \(D_r\) 为 ROI \(r\) 中确定异型 doublet 的总数。分母使用过滤前的
-**全部** singlet 类型计算。
-
-An ROI contributes only when \(S_{ir}\ge100\) and \(S_{jr}\ge100\). Across
-the eligible ROI set \(\mathcal R_{ijc}\) in condition \(c\):
-
-仅当 \(S_{ir}\ge100\) 且 \(S_{jr}\ge100\) 时，该 ROI 才纳入计算。对疾病组
-\(c\) 的合格 ROI 集合 \(\mathcal R_{ijc}\)：
-
-$$
-O_{ijc}=\sum_{r\in\mathcal R_{ijc}}O_{ijr},\qquad
-E_{ijc}=\sum_{r\in\mathcal R_{ijc}}E_{ijr},\qquad
-N_{ijc}=\sum_{r\in\mathcal R_{ijc}}D_r.
-$$
-
-The estimate is retained only when
-
-仅当下式成立时保留估计：
-
-$$
-E_{ijc}\ge
-E_{\min,ijc}
-=\max\left(5,\;10^{-4}N_{ijc}\right).
-$$
-
-The primary effect size contains no pseudocount:
-
-主效应量不添加 pseudocount：
-
-$$
-R_{O/E,ijc}=\frac{O_{ijc}}{E_{ijc}},\qquad
+The denominator uses **all singlet types before pair-specific filtering**.
+Across eligible ROIs, observed and expected counts are summed before taking
+their ratio:
+```{math}
+R_{O/E,ijc}=\frac{\sum_r O_{ijr}}{\sum_r E_{ijr}},
+\qquad
 L_{ijc}=\log_2R_{O/E,ijc}.
-$$
+```
 
-If \(O=0\), the exact \(L\) is \(-\infty\). Only the heatmap display uses
-\(\log_2(0.5/E)\); the tile is labelled “Zero observed”. Non-estimable cells
-are not drawn and therefore remain blank.
-
-当 \(O=0\) 时，精确的 \(L=-\infty\)。仅热图显示采用
-\(\log_2(0.5/E)\)，并标记“Zero observed”；不可估计位置不绘制 tile，
-因此保持空白。
+No pseudocount is added to the primary effect size. An estimate is displayed
+only when
+```{math}
+E_{ijc}\ge\max\left(5,10^{-4}N_{ijc}\right).
+```
 
 ```r
 stg_plot_pair_triangle(
@@ -447,91 +483,16 @@ stg_plot_pair_triangle(
 )
 ```
 
-The complete derivation, assumptions, reporting language, and output-column
-definitions are provided in the dedicated mathematical note.
+**Result:** Cause the demo ROI only contains Duct2–Fibroblast mixed units, this value only exhibite output data format.
 
-完整推导、假设、论文报告措辞及输出字段定义见专门的数学说明页。
-
-{doc}`t4_pair_enrichment_mathematics`
+The complete derivation and output-column definitions are provided in
+{doc}`t4_pair_enrichment_mathematics`.
 
 ---
 
-## 11. Connect morphology to spatial gradients
-
-## 11. 将形态特征连接到空间梯度
-
-The original stGrads logic can now be applied to morphology as well as
-expression.
-
-原 stGrads 的梯度逻辑现在既可以用于表达，也可以用于形态。
+## 11. Reproducibility files
 
 ```r
-gradient <- stg_spatial_gradient(
-  object = refined,
-  label_col = "first_type",
-  reference = "Duct2",
-  query = "Fibroblast",
-  x_col = "centroid_x_um_cell",
-  y_col = "centroid_y_um_cell",
-  cell_id_col = "CellID",
-  sample_col = "sample",
-  max_distance = 100,
-  decay = "exponential"
-)
-
-morphology_matrix <- t(as.matrix(
-  refined[, c(
-    "area_um2_cell",
-    "area_um2_nuc",
-    "nucleus_fraction",
-    "boundary_complexity_cell"
-  )]
-))
-colnames(morphology_matrix) <- refined$CellID
-
-morphology_gradients <- stg_gradient_test(
-  morphology_matrix,
-  gradient,
-  metric = "distance",
-  method = "spearman"
-)
-
-morphology_gradients
+packageVersion("stGrads")
+sessionInfo()
 ```
-
-This extends the original expression-gradient question:
-
-这将原始表达梯度问题扩展为：
-
-> Do fibroblast morphology and transcriptional programs change continuously
-> with distance from Duct2 tumor cells?
-
-> 成纤维细胞的形态与转录 program 是否随其到 Duct2 肿瘤细胞的距离连续变化？
-
----
-
-## Interpretation boundary
-
-## 解释边界
-
-Use the following wording:
-
-推荐使用以下表述：
-
-> Spatially supported mixed cell-type units with concordant morphometric and
-> marker-program evidence.
-
-> 具有一致形态学和 marker program 证据的空间支持性混合细胞类型单元。
-
-Avoid:
-
-避免使用：
-
-> Confirmed physical cell-cell contacts.
-
-> 已确认的物理细胞接触。
-
-Direct contact requires image-level validation, multi-nucleus detection,
-membrane segmentation, or orthogonal staining.
-
-直接接触仍需图像层验证、多细胞核检测、细胞膜分割或正交染色。
