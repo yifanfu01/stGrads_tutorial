@@ -15,3 +15,5 @@ stGrads Tutorial Documentation
    t2_visiumHD
    t3_visiumHD_morphology_doublets.md
    t4_pair_enrichment_mathematics.md
+   t5_spatial_pseudocells.md
+   api_reference.md
