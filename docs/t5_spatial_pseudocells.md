@@ -12,11 +12,12 @@ segmentation.
 
 ## 1. Define spatial pseudo-cells
 
-For an original segment $s$, let $mathbf{x}_s=(x_s,y_s)$ denote its spatial
+For an original segment $s$, let $\mathbf{x}_s=(x_s,y_s)$ denote its spatial
 centroid. With grid width $h$, the spatial grid index is
 
 ```{math}
-g(s) = (floor(x_s / h), floor(y_s / h)).
+g(s) = \left(\left\lfloor \frac{x_s}{h} \right\rfloor,
+\left\lfloor \frac{y_s}{h} \right\rfloor\right).
 ```
 
 Here, $h$ is the `grid_size` parameter. Segments are first restricted to the
@@ -24,19 +25,20 @@ same sample and, optionally, the same cell type. Within each sample-grid
 cell, segments are randomly partitioned into groups with target size $m$:
 
 ```{math}
-P_{g,k} = { s in g : k m < rank_g(s) <= (k + 1) m }.
+\mathcal{P}_{g,k} = \left\{s \in g:
+km < \operatorname{rank}_g(s) \le (k+1)m\right\}.
 ```
 
 Only groups satisfying the following size constraint are retained:
 
 ```{math}
-n_min <= |P_{g,k}| <= n_max.
+n_{\min} \le \left|\mathcal{P}_{g,k}\right| \le n_{\max}.
 ```
 
 Counts are then aggregated gene by gene:
 
 ```{math}
-Y_{gk,j} = sum_{s in P_{g,k}} X_{s,j}.
+Y_{gk,j} = \sum_{s \in \mathcal{P}_{g,k}} X_{s,j}.
 ```
 
 This produces an expression matrix with pseudo-cells as columns and genes as
@@ -102,7 +104,8 @@ mapping[, c(
 The mapping is an explicit many-to-one relation:
 
 ```{math}
-f: S_retained -> P,  f(s) = p(s).
+f:\mathcal{S}_{\mathrm{retained}} \to \mathcal{P},
+\qquad f(s)=p(s).
 ```
 
 Every retained segment $s$ is assigned to exactly one pseudo-cell $p(s)$.
