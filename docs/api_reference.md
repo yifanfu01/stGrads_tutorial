@@ -45,6 +45,8 @@ back to every original segment.
 | `stg_spatial_neighborhood()` | `object`, `cell_type_col`, `radius`, `group_cols` | Neighborhood counts and proportions | Quantifies local cell-type composition. |
 | `stg_tumor_interface()` | `object`, `tumor_col`, `radius` | Interface distance table | Quantifies distance to a tumor or epithelial interface. |
 | `stg_stromal_barrier()` | `object`, `stromal_col`, `radius` | Barrier proxy table | Summarizes stromal obstruction between spatial populations. |
+| `stg_region_connectivity()` | `data`, `radii`, `x_col`, `y_col`, `id_col`, `sample_col`, `label_col`, `labels`, `buffer_fraction` | List with `segments`, `polygons`, `components`, and `parameters` | Constructs expression-independent radius-graph components and rim-to-interior depth. |
+| `stg_plot_region_connectivity()` | `x`, `sample`, `radii`, `background`, `background_extent`, `x_transform`, `y_transform` | ggplot object | Draws multiscale component boundaries and normalized boundary depth. |
 
 ## Morphology and segmentation
 
@@ -76,7 +78,7 @@ back to every original segment.
 | `stg_pair_enrichment()` | `metadata`, `sample_col`, `condition_col`, `min_singlet_cells`, `min_expected` | ROI-level and condition-level tables | Computes conditional heterotypic observed-to-expected pair enrichment. |
 | `stg_plot_pair_triangle()` | `enrichment`, `condition`, `value`, `show_counts` | ggplot object | Displays undirected pair enrichment as a triangular heatmap. |
 
-The primary effect size is the unregularized ratio (O/E). The display-only
+The primary effect size is the unregularized ratio $O/E$. The display-only
 value for an observed zero may use a finite pseudocount so that the heatmap
 can be colored, but the exact zero remains recorded in the output.
 
